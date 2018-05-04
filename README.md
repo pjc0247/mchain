@@ -16,7 +16,7 @@ A fork of [minichain](https://github.com/pjc0247/minichain/tree/minimal-impl) wh
 
 __[Documentation](docs/)__<br>
 
-![a](prev.gif)
+![a](doge.jpg)
 
 You can learn
 ----
