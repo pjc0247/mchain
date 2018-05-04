@@ -33,6 +33,8 @@ namespace minichain
 
                     if (addr == "P")
                         miner.SendTransaction(miner.wallet.CreatePaymentTransaction("ASDF", 0.1));
+                    else if (addr == "C")
+                        miner.SendTransaction(miner.wallet.CreateDeployTransaction("ASDF"));
                     else
                         peers.AddPeer(addr);
                 }

@@ -17,7 +17,7 @@ namespace minichain
     /// WRITE: SingleThread
     /// READ: MultiThread
     /// </summary>
-    public class FileDB : IDisposable
+    public class FileDB : IStorageBackend, IDisposable
     {
         public string key;
 

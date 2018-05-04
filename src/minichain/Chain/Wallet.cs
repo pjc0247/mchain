@@ -11,6 +11,10 @@ namespace minichain
     public class WalletState : SingleState
     {
         public string address => key;
+
+        public WalletState() : base(StateType.Wallet)
+        {
+        }
     }
     public class WalletParameter
     {
@@ -82,7 +86,7 @@ namespace minichain
         }
 
         /// <summary>
-        /// Creates a transaction signed by this wallet
+        /// Creates a payment transaction signed by current wallet
         /// </summary>
         public Transaction CreatePaymentTransaction(string receiverAddr, double amount, double fee = 0)
         {
@@ -101,14 +105,24 @@ namespace minichain
             Sign(tx);
             return tx;
         }
+
+        /// <summary>
+        /// Creates a deploy transaction signed by current wallet
+        /// </summary>
         public Transaction CreateDeployTransaction(string contractProgram, double fee = 0)
         {
+            var contractAddr = Hash.Calc2(
+                UniqID.Generate(),
+                Hash.Calc2($"{chain.currentBlock.blockNo}", contractProgram));
+
             var tx = new Transaction()
             {
                 type = TransactionType.Deploy,
 
                 contractProgram = contractProgram,
+
                 senderAddr = address,
+                receiverAddr = contractAddr,
 
                 fee = fee
             };

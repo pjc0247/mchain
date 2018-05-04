@@ -86,7 +86,7 @@ namespace minichain
                 result = new WalletState()
                 {
                     key = wallet.address,
-                    value = wallet.value
+                    balance = wallet.balance
                 }
             });
         }

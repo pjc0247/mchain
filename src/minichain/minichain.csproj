@@ -58,7 +58,10 @@
     <Compile Include="Chain\ChainState.cs" />
     <Compile Include="DataStructure\CappedList.cs" />
     <Compile Include="DB\FileDB.cs" />
+    <Compile Include="DB\IStorageBackend.cs" />
+    <Compile Include="DB\MemDB.cs" />
     <Compile Include="DB\Model\HashObject.cs" />
+    <Compile Include="DB\Model\PushStateEntry.cs" />
     <Compile Include="DB\Model\SingleState.cs" />
     <Compile Include="DB\StateDB.cs" />
     <Compile Include="Net\HardCodedSeeds.cs" />

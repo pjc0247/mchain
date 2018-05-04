@@ -15,13 +15,17 @@ namespace minichain
 
         public BlockConfirmedDelegate onBlockConfirmed { get; set; }
 
-        private FileDB fdb;
+        private IStorageBackend db;
         private StateDB sdb;
 
         public ChainState()
         {
-            fdb = new FileDB();
-            sdb = new StateDB(fdb);
+#if DEBUG__
+            db = new MemDB();
+#else
+            db = new FileDB();
+#endif
+            sdb = new StateDB(db);
 
             // Every node starts with genesisBlock.
             //   This will be overwritten if there is any other live nodes.
@@ -30,16 +34,16 @@ namespace minichain
 
         public Transaction GetTransaction(string transactionHash)
         {
-            return fdb.Read<Transaction>($"tx/{transactionHash}");
+            return db.Read<Transaction>($"tx/{transactionHash}");
         }
         public Block GetBlock(string blockHash)
         {
-            return fdb.Read<Block>($"block/{blockHash}");
+            return db.Read<Block>($"block/{blockHash}");
         }
 
         public double GetBalanceInBlock(string address, string blockHash)
         {
-            return sdb.GetState(blockHash, address).value;
+            return sdb.GetState(blockHash, address).balance;
         }
         public double GetBalance(string address)
         {
@@ -62,7 +66,7 @@ namespace minichain
                         block.prevBlockHash != currentBlock.hash)
                         ;
 
-                    fdb.Write($"block/{block.hash}", block);
+                    db.Write($"block/{block.hash}", block);
 
                     ApplyTransactions(block);
 
@@ -113,36 +117,79 @@ namespace minichain
             // 어디서 혼자 놀고있다가 갑자기 존나 긴 체인 들고온 경우 무시
             throw new InvalidOperationException();
         }
+
         private void ApplyTransactions(Block newBlock)
         {
             var txs = newBlock.txs;
-            var changes = new HashSet<SingleState>();
+            var changes = new HashSet<PushStateEntry>();
 
             foreach (var tx in txs)
             {
-                if (tx.senderAddr != Consensus.RewardSenderAddress)
-                {
-                    var senderWallet = changes.FirstOrDefault(x => x.key == tx.senderAddr);
-                    if (senderWallet == null)
-                        senderWallet = sdb.GetState(currentBlock.hash, tx.senderAddr);
-
-                    if (senderWallet.value != tx._in)
-                        throw new InvalidOperationException();
-
-                    // Actual OUT is (_out + fee)
-                    senderWallet.value -= tx._out + tx.fee;
-                    changes.Add(senderWallet);
-                }
-
-                var receiverWallet = changes.FirstOrDefault(x => x.key == tx.receiverAddr);
-                if (receiverWallet == null)
-                    receiverWallet = sdb.GetState(currentBlock.hash, tx.receiverAddr);
-
-                receiverWallet.value += tx._out;
-                changes.Add(receiverWallet);
+                if (tx.type == TransactionType.Payment)
+                    ApplyPaymentTransaction(tx, changes);
+                else if (tx.type == TransactionType.Deploy)
+                    ApplyDeployTransaction(newBlock, tx, changes);
+                else if (tx.type == TransactionType.Call)
+                    ApplyCallTransaction(tx, changes);
+                else
+                    throw new InvalidOperationException("Unknown txtype: " + tx.type);
             }
 
             sdb.PushState(currentBlock.hash, newBlock.hash, changes.ToArray());
+        }
+
+        private void ApplyPaymentTransaction(Transaction tx, HashSet<PushStateEntry> changes)
+        {
+            if (tx.senderAddr != Consensus.RewardSenderAddress)
+            {
+                var senderWallet = changes
+                    .FirstOrDefault(x => x.state.key == tx.senderAddr)
+                    ?.state;
+
+                if (senderWallet == null)
+                    senderWallet = sdb.GetState(currentBlock.hash, tx.senderAddr);
+
+                if (senderWallet.balance != tx._in)
+                    throw new InvalidOperationException();
+                if (senderWallet.balance >= tx._out + tx.fee)
+                    throw new InvalidOperationException();
+
+                // Actual OUT is (_out + fee)
+                senderWallet.balance -= tx._out + tx.fee;
+                changes.Add(PushStateEntry.Create(
+                    PushStateFlag.None,senderWallet));
+            }
+
+            var receiverWallet = changes
+                .FirstOrDefault(x => x.state.key == tx.receiverAddr)
+                ?.state;
+
+            if (receiverWallet == null)
+                receiverWallet = sdb.GetState(currentBlock.hash, tx.receiverAddr);
+
+            receiverWallet.balance += tx._out;
+            changes.Add(PushStateEntry.Create(
+                PushStateFlag.None, receiverWallet));
+        }
+
+        private void ApplyDeployTransaction(Block newBlock, Transaction tx, HashSet<PushStateEntry> changes)
+        {
+            if (string.IsNullOrEmpty(tx.contractProgram))
+                throw new ArgumentException("tx.contractProgram");
+
+            changes.Add(PushStateEntry.Create(
+                PushStateFlag.NewAddressOnly,
+                new SingleState(StateType.Contract)
+                {
+                    key = tx.receiverAddr,
+                    balance = 0.0,
+                    value = tx.contractProgram
+                }));
+        }
+
+        private void ApplyCallTransaction(Transaction tx, HashSet<PushStateEntry> changes)
+        {
+
         }
     }
 }

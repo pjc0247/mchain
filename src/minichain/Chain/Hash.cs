@@ -31,5 +31,10 @@ namespace minichain
             else
                 return Calc(b + a);
         }
+
+        public static string Calc3(string a, string b, string c)
+        {
+            return Calc2(Calc2(a, b), c);
+        }
     }
 }

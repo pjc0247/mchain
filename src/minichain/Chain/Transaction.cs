@@ -66,8 +66,20 @@ namespace minichain
         public static bool IsValidTransaction(Transaction tx)
         {
             if (tx.senderAddr == Consensus.RewardSenderAddress) return false;
-            if (tx._out == 0) return false;
+            if (string.IsNullOrEmpty(tx.receiverAddr)) return false;
             if (tx.isSigned == false) return false;
+
+            if (tx.type == TransactionType.Payment)
+            {
+                if (tx._out == 0) return false;
+            }
+            else if (tx.type == TransactionType.Deploy)
+            {
+                if (string.IsNullOrEmpty(tx.contractProgram)) return false;
+            }
+            else if (tx.type == TransactionType.Call)
+            {
+            }
 
             if (Hash.Calc(tx.publicKey) != tx.senderAddr)
                 return false;

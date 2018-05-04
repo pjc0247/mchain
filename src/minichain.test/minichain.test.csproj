@@ -52,6 +52,7 @@
     <Compile Include="Cvt_test.cs" />
     <Compile Include="RSA_test.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="StateDB_test.cs" />
     <Compile Include="TxPool_test.cs" />
   </ItemGroup>
   <ItemGroup>

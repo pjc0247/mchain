@@ -6,14 +6,32 @@ using System.Threading.Tasks;
 
 namespace minichain
 {
+    public enum StateType
+    {
+        Wallet,
+
+        Contract
+    }
+
     public class SingleState : HashObject
     {
-        public string key { get; set; }
-        public double value { get; set; }
+        public StateType type { get; set; }
 
+        public string key { get; set; }
+        public double balance { get; set; }
+        public string value { get; set; }
+
+        /// <summary>
+        /// THIS IS NOT AN ADDRESS
+        /// </summary>
         public override string hash
         {
-            get { return Hash.Calc2(key, value.ToString()); }
+            get { return Hash.Calc3(key, balance.ToString(), value); }
+        }
+
+        public SingleState(StateType _type)
+        {
+            type = _type;
         }
     }
 }

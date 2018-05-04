@@ -35,37 +35,37 @@ namespace minichain
             }
         }
 
-        private FileDB fdb;
+        private IStorageBackend db;
 
         public StateDB()
         {
-            fdb = new FileDB();
+            db = new FileDB();
         }
-        public StateDB(FileDB _fdb)
+        public StateDB(IStorageBackend _db)
         {
-            fdb = _fdb;
+            db = _db;
         }
 
         private DataHeader ReadHeader(string stateRoot)
         {
-            var header = fdb.Read<DataHeader>($"root/{stateRoot}");
+            var header = db.Read<DataHeader>($"root/{stateRoot}");
             if (header == null) return DataHeader.EmptyState();
             return header;
         }
         private string WriteHeader(string stateRoot, DataHeader header)
         {
-            fdb.Write($"root/{stateRoot}", header);
+            db.Write($"root/{stateRoot}", header);
             return stateRoot;
         }
 
         private SingleState[] ReadStateBlob(string index, string uid)
         {
-            return fdb.Read<SingleState[]>($"chain/{index}/{uid}");
+            return db.Read<SingleState[]>($"chain/{index}/{uid}");
         }
         private string WriteStateBlob(string index, SingleState[] wallets)
         {
             var uid = UniqID.Generate();
-            fdb.Write($"chain/{index}/{uid}", wallets);
+            db.Write($"chain/{index}/{uid}", wallets);
             return uid;
         }
 
@@ -91,17 +91,17 @@ namespace minichain
 
             // Empty account
             EmptyAccount:
-            return new SingleState()
+            return new SingleState(StateType.Wallet)
             {
                 key = address,
-                value = 0
+                balance = 0.0
             };
         }
 
         /// <summary>
         /// Pushes the changes into database.
         /// </summary>
-        public string PushState(string prevStateRoot, string stateRoot, SingleState[] changedWallets)
+        public string PushState(string prevStateRoot, string stateRoot, PushStateEntry[] changedStates)
         {
             DataHeader header = null;
 
@@ -109,19 +109,39 @@ namespace minichain
                 header = DataHeader.EmptyState();
             else header = ReadHeader(prevStateRoot);
 
-            var changes = new Dictionary<string, List<SingleState>>();
-            foreach (var wallet in changedWallets)
+            var changes = new Dictionary<string, Dictionary<string, SingleState>>();
+            foreach (var entry in changedStates)
             {
-                var index = GetIndexFromHash(wallet.key);
+                var state = entry.state;
+                var index = GetIndexFromHash(state.key);
 
                 if (changes.ContainsKey(index) == false)
-                    changes[index] = new List<SingleState>();
+                {
+                    if (header.path.ContainsKey(index))
+                    {
+                        changes[index] = ReadStateBlob(index, header.path[index])
+                            .ToDictionary(x => x.key, x => x);
+                    }
+                    else 
+                        changes[index] = new Dictionary<string, SingleState>();
+                }
 
-                changes[index].Add(wallet);
+                if ((entry.flag & PushStateFlag.NewAddressOnly) != 0)
+                {
+                    if (changes[index].ContainsKey(state.key))
+                        throw new InvalidOperationException(
+                            "PushStateFlag.NewAddressOnly: " +
+                            state.key);
+                }
+
+                changes[index][state.key] = state;
             }
 
             foreach (var change in changes)
-                header.path[change.Key] = WriteStateBlob(change.Key, change.Value.ToArray());
+            {
+                var states = change.Value.Select(x => x.Value).ToArray();
+                header.path[change.Key] = WriteStateBlob(change.Key, states);
+            }
 
             return WriteHeader(stateRoot, header);
         }
