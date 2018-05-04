@@ -12,7 +12,7 @@
 
 A fork of [minichain](https://github.com/pjc0247/minichain/tree/minimal-impl) which implements more advanced features such as VM and ZUZUZUZU stuffs.
 
-(minichain project pursues the minimal codes, That's why I made another project to keep this simplicity.)
+(minichain project pursues the minimal codes, That's why I made another project.)
 
 __[Documentation](docs/)__<br>
 
