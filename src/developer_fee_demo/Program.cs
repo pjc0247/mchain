@@ -31,7 +31,7 @@ namespace developer_fee_demo
             txs.Add(Transaction.CreateRewardTransaction(blockNo, wallet.address, txsWithHighestFee));
             // Second transaction is developer fee
             //    BLOCK_REWARD * FEE_RATE
-            txs.Add(wallet.CreateSignedTransaction(DeveloperAddress, Consensus.CalcBlockReward(blockNo) * DeveloperFeeRate, 0));
+            txs.Add(wallet.CreatePaymentTransaction(DeveloperAddress, Consensus.CalcBlockReward(blockNo) * DeveloperFeeRate, 0));
             txs.AddRange(txsWithHighestFee);
 
             return txs.ToArray();

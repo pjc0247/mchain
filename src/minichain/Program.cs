@@ -32,7 +32,7 @@ namespace minichain
                     var addr = Console.ReadLine();
 
                     if (addr == "P")
-                        miner.SendTransaction(miner.wallet.CreateSignedTransaction("ASDF", 0.1));
+                        miner.SendTransaction(miner.wallet.CreatePaymentTransaction("ASDF", 0.1));
                     else
                         peers.AddPeer(addr);
                 }

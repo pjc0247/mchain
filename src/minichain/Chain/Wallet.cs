@@ -84,10 +84,12 @@ namespace minichain
         /// <summary>
         /// Creates a transaction signed by this wallet
         /// </summary>
-        public Transaction CreateSignedTransaction(string receiverAddr, double amount, double fee = 0)
+        public Transaction CreatePaymentTransaction(string receiverAddr, double amount, double fee = 0)
         {
             var tx = new Transaction()
             {
+                type = TransactionType.Payment,
+
                 _in = chain.GetBalance(address),
                 _out = amount,
 
@@ -99,6 +101,21 @@ namespace minichain
             Sign(tx);
             return tx;
         }
+        public Transaction CreateDeployTransaction(string contractProgram, double fee = 0)
+        {
+            var tx = new Transaction()
+            {
+                type = TransactionType.Deploy,
+
+                contractProgram = contractProgram,
+                senderAddr = address,
+
+                fee = fee
+            };
+            Sign(tx);
+            return tx;
+        }
+
         /// <summary>
         /// Signs a single transaction
         /// </summary>
