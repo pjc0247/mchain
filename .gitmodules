@@ -1,0 +1,3 @@
+[submodule "minidity"]
+	path = minidity
+	url = https://github.com/minisomething/minidity
