@@ -85,6 +85,15 @@
     <None Include="App.config" />
     <None Include="packages.config" />
   </ItemGroup>
-  <ItemGroup />
+  <ItemGroup>
+    <ProjectReference Include="..\..\minidity\src\minivm.core\minivm.core.csproj">
+      <Project>{927f7cba-eef2-4429-9c98-ccdea6d2ec5a}</Project>
+      <Name>minivm.core</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\minidity\src\minivm\minivm.csproj">
+      <Project>{b55c2e34-a003-430f-8fda-661752e6bf71}</Project>
+      <Name>minivm</Name>
+    </ProjectReference>
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>
