@@ -109,7 +109,7 @@ namespace minichain
         /// <summary>
         /// Creates a deploy transaction signed by current wallet
         /// </summary>
-        public Transaction CreateDeployTransaction(string contractProgram, double fee = 0)
+        public Transaction CreateDeployTransaction(string contractProgram, string ctorSignature, double fee = 0)
         {
             var contractAddr = Hash.Calc2(
                 UniqID.Generate(),
@@ -120,6 +120,7 @@ namespace minichain
                 type = TransactionType.Deploy,
 
                 contractProgram = contractProgram,
+                methodSignature = ctorSignature,
 
                 senderAddr = address,
                 receiverAddr = contractAddr,

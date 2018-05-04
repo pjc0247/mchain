@@ -4,6 +4,8 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
+using minivm;
+
 namespace minichain
 {
     public class ChainState
@@ -18,6 +20,8 @@ namespace minichain
         private IStorageBackend db;
         private StateDB sdb;
 
+        private VM<MemStateProvider> vm;
+
         public ChainState()
         {
 #if DEBUG__
@@ -26,6 +30,8 @@ namespace minichain
             db = new FileDB();
 #endif
             sdb = new StateDB(db);
+
+            vm = new VM<MemStateProvider>();
 
             // Every node starts with genesisBlock.
             //   This will be overwritten if there is any other live nodes.
@@ -133,6 +139,8 @@ namespace minichain
                     ApplyCallTransaction(tx, changes);
                 else
                     throw new InvalidOperationException("Unknown txtype: " + tx.type);
+
+                // TODO: 공통된 fee 차감 코드
             }
 
             sdb.PushState(currentBlock.hash, newBlock.hash, changes.ToArray());
@@ -174,9 +182,6 @@ namespace minichain
 
         private void ApplyDeployTransaction(Block newBlock, Transaction tx, HashSet<PushStateEntry> changes)
         {
-            if (string.IsNullOrEmpty(tx.contractProgram))
-                throw new ArgumentException("tx.contractProgram");
-
             changes.Add(PushStateEntry.Create(
                 PushStateFlag.NewAddressOnly,
                 new SingleState(StateType.Contract)
@@ -185,6 +190,9 @@ namespace minichain
                     balance = 0.0,
                     value = tx.contractProgram
                 }));
+
+            (var abi, var insts) = BConv.FromBase64(tx.contractProgram);
+            vm.Execute(abi, insts, tx.methodSignature, 1000, out _);
         }
 
         private void ApplyCallTransaction(Transaction tx, HashSet<PushStateEntry> changes)
