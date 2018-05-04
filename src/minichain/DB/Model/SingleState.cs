@@ -10,7 +10,8 @@ namespace minichain
     {
         Wallet,
 
-        Contract
+        Contract,
+        Field
     }
 
     public class SingleState : HashObject
@@ -19,14 +20,14 @@ namespace minichain
 
         public string key { get; set; }
         public double balance { get; set; }
-        public string value { get; set; }
+        public object value { get; set; }
 
         /// <summary>
         /// THIS IS NOT AN ADDRESS
         /// </summary>
         public override string hash
         {
-            get { return Hash.Calc3(key, balance.ToString(), value); }
+            get { return Hash.Calc3(key, balance.ToString(), value?.ToString()); }
         }
 
         public SingleState(StateType _type)

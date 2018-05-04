@@ -37,7 +37,7 @@ namespace minichain
                     {
                         miner.SendTransaction(
                             miner.wallet.CreateDeployTransaction(
-                                "0xmH4sIAAAAAAAEALVS3UsbQRy81fvI5cN8ICqllFCKiISjtW+BPCR5CqLtg/RFSrhcFnN42Q13e4p/pxYppVQRKaX0b9CdzW25Q/vYC0yWmdm5nd+eQQzDeJAP/vFUVyQM5iELz+ZewGPaaX+icRJy1nvnvcWv0x6mkUhj2mM0FbEfddof00kUBvv04oifUtZjaRRZCCxnOf3BCLFuwJncEIjEmVMx49PENuuZ5UARx5/hU95VgCmhiRXSbAuLvgNSEfCZtUKA2moDHAkWVs8YkvCE+ahgUXmgC2KUQNslCaV+tzsOBI/VSxCCDNtFmpQmE5gqxv8am0N0uQbKtbLEEUtEnAZC5hWH41qFwi5O5+KwbhlQAVQBNcAaoA5AutsEtNAMef94lxnwKXX4gsY+m5orepofFuD1bVl/5CyKEjo4Z36U0vF4OV8143XU2yM4u7rX33IjNitxA8x7YmnxVyaihr319wqIrQ0/84YXuOwhZwmPqLeIQybU/Snjfd74EuMdzvyQeSdUDCIenB5yUtLeu7z31dNQVxtvM6P61ElZ0zcZbSi6oukfGY2S9mswE1LV4ve8+AaMT2pa/JaJmxC3l+KaFr/mxZ1lbF2L1/kqu/i8D3wx8xb8nDS050uhRVPTVwW6penLfLnKI7bVLjw/BAAA",
+                                "0xmH4sIAAAAAAAEALVTW4vTQBjN7ObS9LK97KIiIn0QESlhLz4t9KHt0yKrPogvIiVJhzbsdKYkk5X9kSqLiIi4y7KIiD9C50wzkqA+msLpcM6ZM9/3TWIRy7J+qgf/eJobCsbLhCenyyAWKR30X9A0SwQf7gW7+A36k5zJPKVDTnOZhmzQf5ZHLIkf07Pn4oTyIc8ZcxBYL3JG4yPE+rHgakMsM29J5ULMMtduF5ZjTbx8BZ/2bgJsBV2skOY6WIw8kJqAz25VAvRWF+ApcLD6iyFL5jxECw5VBZ0RqwbarSmojQ4Pp7EUqT4EIchwfaQpKYrqatWw/tfYPGKa66G5XpF4xDOZ5rFUedXh+E6lYR8t+CjWR51+A9AEtABbgDagA+gCcI6/DdhBj0j+x6l2LGbUEyuahnxmb5i5Pl2BN/fm/FBTqUroxjsNWU6n0/Wk9bRvIHJv/+ARQSP6kr+rvdiPStxbGLQa+ZyJKGTTkDjG9q2w6ZjbYPaJa8SvZfEOmAN9jVq8LkTMxb37+05JzRiuyoY+3p6J4JlgNFilCZfEN8bLwqhfc1I39EVBW5puGPpLOfaegs5kESY8mFM5ZiI+eSJI03g/l733/yyhZYyfCiMG6T4AE5EtI34siw/BhKRtxA+FeBPiYC12jPi+LAbr2K4Rz8vF7eJ7OQ7lIliJ16RnPO8qo9k29NsKvWPoN+WJNX4BmBrfqZAEAAA=",
                                 "A::_ctor"));
                     }
                     else

@@ -13,19 +13,33 @@ namespace minichain
         public int blockNo => state.currentBlock.blockNo;
 
         private ChainState state;
+        private string contractAddr;
+        private HashSet<PushStateEntry> changes;
 
-        public ChainStateProvider(ChainState _state)
+        public void SetContext(
+            ChainState _state,
+            string _contractAddr,
+            HashSet<PushStateEntry> _changes)
         {
             state = _state;
+            contractAddr = _contractAddr;
+            changes = _changes;
         }
 
         public object GetState(string key)
         {
-            throw new NotImplementedException();
+            return state.GetState(key).value;
         }
         public void SetState(string key, object value)
         {
-            throw new NotImplementedException();
+            key = Hash.Calc2(contractAddr, key);
+
+            changes.Add(PushStateEntry.Create(PushStateFlag.None,
+                new SingleState(StateType.Field)
+                {
+                    key = key,
+                    value = value
+                }));
         }
     }
 }

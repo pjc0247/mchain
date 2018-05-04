@@ -20,7 +20,7 @@ namespace minichain
         private IStorageBackend db;
         private StateDB sdb;
 
-        private VM<MemStateProvider> vm;
+        private VM<ChainStateProvider> vm;
 
         public ChainState()
         {
@@ -31,7 +31,7 @@ namespace minichain
 #endif
             sdb = new StateDB(db);
 
-            vm = new VM<MemStateProvider>();
+            vm = new VM<ChainStateProvider>();
 
             // Every node starts with genesisBlock.
             //   This will be overwritten if there is any other live nodes.
@@ -54,7 +54,12 @@ namespace minichain
         public double GetBalance(string address)
         {
             return GetBalanceInBlock(address, currentBlock.hash);
-        }   
+        }
+
+        internal SingleState GetState(string key)
+        {
+            return sdb.GetState(currentBlock.hash, key);
+        }
 
         internal bool PushBlock(Block block)
         {
@@ -192,6 +197,8 @@ namespace minichain
                 }));
 
             (var abi, var insts) = BConv.FromBase64(tx.contractProgram);
+            var sp = (ChainStateProvider)vm.stateProvider;
+            sp.SetContext(this, tx.receiverAddr, changes);
             vm.Execute(abi, insts, tx.methodSignature, 1000, out _);
         }
 
