@@ -57,6 +57,7 @@
     <Compile Include="Chain\Hash.cs" />
     <Compile Include="Chain\Consensus\MerkleTree.cs" />
     <Compile Include="Chain\RSA.cs" />
+    <Compile Include="Chain\Sig2Hash.cs" />
     <Compile Include="Chain\Transaction.cs" />
     <Compile Include="Chain\Wallet.cs" />
     <Compile Include="Chain\ChainState.cs" />

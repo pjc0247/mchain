@@ -32,7 +32,7 @@ namespace minichain
         }
         public void SetState(string key, object value)
         {
-            key = Hash.Calc2(contractAddr, key);
+            key = Sig2Hash.Field(contractAddr, key);
 
             changes.Add(PushStateEntry.Create(PushStateFlag.None,
                 new SingleState(StateType.Field)

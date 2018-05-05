@@ -48,6 +48,13 @@ namespace minichain
                             miner.wallet.CreateCallTransaction(
                                 ctxAddr, "A::bb", new object[] {1, 2}));
                     }
+                    else if (addr == "DD")
+                    {
+                        var r = miner.chain.GetPublicField(ctxAddr,
+                            minivm.ABISignature.Field("A", "global_a"));
+
+                        Console.WriteLine(r);
+                    }
                     else
                         peers.AddPeer(addr);
                 }

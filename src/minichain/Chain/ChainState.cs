@@ -55,6 +55,10 @@ namespace minichain
         {
             return GetBalanceInBlock(address, currentBlock.hash);
         }
+        public object GetPublicField(string address, string fieldSignature)
+        {
+            return GetState(Sig2Hash.Field(address, fieldSignature)).value;
+        }
 
         internal SingleState GetState(string key)
         {
@@ -215,9 +219,7 @@ namespace minichain
             (var abi, var insts) = BConv.FromBase64(contract);
             var sp = (ChainStateProvider)vm.stateProvider;
             sp.SetContext(this, tx.receiverAddr, changes);
-            var ret = vm.Execute(abi, insts, tx.methodSignature, tx.callArgs, 1000, out _);
-
-            Console.WriteLine(ret);
+            var ret = vm.Execute  (abi, insts, tx.methodSignature, tx.callArgs, 1000, out _);
         }
     }
 }
