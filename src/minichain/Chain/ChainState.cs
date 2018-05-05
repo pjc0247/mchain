@@ -215,7 +215,9 @@ namespace minichain
             (var abi, var insts) = BConv.FromBase64(contract);
             var sp = (ChainStateProvider)vm.stateProvider;
             sp.SetContext(this, tx.receiverAddr, changes);
-            vm.Execute(abi, insts, tx.methodSignature, 1000, out _);
+            var ret = vm.Execute(abi, insts, tx.methodSignature, tx.callArgs, 1000, out _);
+
+            Console.WriteLine(ret);
         }
     }
 }

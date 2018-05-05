@@ -132,6 +132,27 @@ namespace minichain
         }
 
         /// <summary>
+        /// Creates a call transaction signed by current wallet
+        /// </summary>
+        public Transaction CreateCallTransaction(string contractAddr, string methodSignature, object[] args, double fee = 0)
+        {
+            var tx = new Transaction()
+            {
+                type = TransactionType.Call,
+
+                methodSignature = methodSignature,
+                callArgs = args,
+
+                senderAddr = address,
+                receiverAddr = contractAddr,
+
+                fee = fee
+            };
+            Sign(tx);
+            return tx;
+        }
+
+        /// <summary>
         /// Signs a single transaction
         /// </summary>
         public void Sign(Transaction tx)
