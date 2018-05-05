@@ -50,6 +50,28 @@ var currentBalance = node.chain.GetBalance("ADDRESS");
 var balanceAtSpecificBlock = node.chain.GetBalanceInBlock("ADDRESS", "BLOCK_HASH");
 ```
 
+Contract
+----
+__Deploy__
+```cs
+var tx = node.wallet.CreateDeployTransaction("PROGRAM", "CTOR_SIGNATURE");
+var contractAddress = tx.receiverAddr;
+node.SendTransaction(tx);
+```
+
+__Call method__
+```cs
+var tx = node.wallet.CreateCallTransaction(
+  contractAddress, "METHOD_SIGNATURE", 
+  new object[] { 10, 20 });
+node.SendTransaction(tx);
+```
+
+__Read field data__
+```cs
+var val = node.chain.GetPublicField(contractAddress, "FIELD_SIGNATURE");
+```
+
 Wallet
 ----
 __Import and Export__
