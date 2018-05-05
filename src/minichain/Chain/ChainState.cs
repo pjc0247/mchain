@@ -60,6 +60,10 @@ namespace minichain
         {
             return sdb.GetState(currentBlock.hash, key);
         }
+        internal string GetContract(string key)
+        {
+            return (string)sdb.GetState(currentBlock.hash, key)?.value;
+        }
 
         internal bool PushBlock(Block block)
         {
@@ -204,7 +208,14 @@ namespace minichain
 
         private void ApplyCallTransaction(Transaction tx, HashSet<PushStateEntry> changes)
         {
+            var contract = GetContract(tx.receiverAddr);
+            if (contract == null)
+                throw new InvalidOperationException("Invalid contract addr");
 
+            (var abi, var insts) = BConv.FromBase64(contract);
+            var sp = (ChainStateProvider)vm.stateProvider;
+            sp.SetContext(this, tx.receiverAddr, changes);
+            vm.Execute(abi, insts, tx.methodSignature, 1000, out _);
         }
     }
 }
