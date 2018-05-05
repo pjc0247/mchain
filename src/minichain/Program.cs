@@ -65,26 +65,6 @@ namespace minichain
             }
         }
 
-        private static void UpdateScreen(Miner miner)
-        {
-            while (true)
-            {
-                int backupX = Console.CursorLeft;
-                int backupY = Console.CursorTop;
-
-                Console.CursorLeft = 60;
-                Console.CursorTop = 7;
-
-                Console.ForegroundColor = ConsoleColor.Green;
-                Console.WriteLine($"PEERS: {miner.peers.alivePeers}");
-
-                Console.CursorLeft = backupX;
-                Console.CursorTop = backupY;
-                Console.ResetColor();
-
-                Thread.Sleep(1000);
-            }
-        }
         private static void OnUnhandledException(object sender, UnhandledExceptionEventArgs e)
         {
             Console.WriteLine(e.ExceptionObject);
