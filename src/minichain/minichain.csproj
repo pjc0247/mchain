@@ -87,6 +87,7 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Util\Copyright.cs" />
     <Compile Include="Util\Cvt.cs" />
+    <Compile Include="Util\udouble.cs" />
     <Compile Include="Util\UniqID.cs" />
   </ItemGroup>
   <ItemGroup>

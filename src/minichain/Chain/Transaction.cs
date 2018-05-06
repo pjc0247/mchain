@@ -9,6 +9,7 @@ namespace minichain
     public enum TransactionType
     {
         /// <summary>
+        /// 
         /// Send funds with _in & _out patameters.
         /// </summary>
         Payment,
@@ -39,8 +40,8 @@ namespace minichain
 
         public string senderAddr, receiverAddr;
 
-        public double fee;
-        public double _in, _out;
+        public udouble fee;
+        public udouble _in, _out;
         public string dTag;
 
         public bool isSigned =>
@@ -79,6 +80,7 @@ namespace minichain
             }
             else if (tx.type == TransactionType.Call)
             {
+                if (tx.callArgs == null) return false;
             }
 
             if (Hash.Calc(tx.publicKey) != tx.senderAddr)
