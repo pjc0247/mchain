@@ -11,7 +11,9 @@ namespace minichain
         Wallet,
 
         Contract,
-        Field
+        Field,
+
+        ANSLookup
     }
 
     public class SingleState : HashObject

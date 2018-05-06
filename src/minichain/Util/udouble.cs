@@ -27,6 +27,10 @@ namespace minichain
                 return 1;
             return -1;
         }
+        public override string ToString()
+        {
+            return _value.ToString();
+        }
 
         public static implicit operator double(udouble d)
         {

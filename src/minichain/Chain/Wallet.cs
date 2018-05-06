@@ -152,6 +152,22 @@ namespace minichain
             return tx;
         }
 
+        public Transaction CreateRegisterANSTransaction(string targetAddress, string name, double fee = 0)
+        {
+            var tx = new Transaction()
+            {
+                type = TransactionType.RegisterANS,
+
+                senderAddr = address,
+                receiverAddr = targetAddress,
+                ANSname = name,
+
+                fee = fee
+            };
+            Sign(tx);
+            return tx;
+        }
+
         /// <summary>
         /// Signs a single transaction
         /// </summary>

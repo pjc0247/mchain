@@ -22,7 +22,12 @@ namespace minichain
         /// <summary>
         /// Execute a single method from contract
         /// </summary>
-        Call
+        Call,
+
+        /// <summary>
+        /// Parking address
+        /// </summary>
+        RegisterANS
     }
 
     public class TransactionHeader : HashObject
@@ -56,6 +61,9 @@ namespace minichain
         // TransactionType.Call
         public string methodSignature;
         public object[] callArgs;
+
+        // TransactionType.*ANS
+        public string ANSname;
     }
 
     public class Transaction : TransactionBody
@@ -81,6 +89,10 @@ namespace minichain
             else if (tx.type == TransactionType.Call)
             {
                 if (tx.callArgs == null) return false;
+            }
+            else if (tx.type == TransactionType.RegisterANS)
+            {
+                if (string.IsNullOrEmpty(tx.ANSname)) return false;
             }
 
             if (Hash.Calc(tx.publicKey) != tx.senderAddr)

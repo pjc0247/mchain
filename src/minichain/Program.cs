@@ -23,6 +23,11 @@ namespace minichain
             Console.WriteLine(miner.wallet.Export());
             miner.Start();
 
+            udouble a = 1;
+            udouble b = 0;
+            Console.WriteLine(a + b);
+
+
             try
             {
                 var peers = miner.peers;
@@ -54,6 +59,18 @@ namespace minichain
                             minivm.ABISignature.Field("A", "global_a"));
 
                         Console.WriteLine(r);
+                    }
+                    else if (addr == "qq")
+                    {
+                        var tx = miner.wallet.CreateRegisterANSTransaction(
+                            "AAAAA", "*zuzu");
+                        miner.SendTransaction(tx);
+                    }
+                    else if (addr == "ww")
+                    {
+                        var tx = miner.wallet.CreatePaymentTransaction(
+                            "*zuzu", 1);
+                        miner.SendTransaction(tx);
                     }
                     else
                         peers.AddPeer(addr);

@@ -59,6 +59,10 @@ namespace minichain
         {
             return GetState(Sig2Hash.Field(address, fieldSignature)).value;
         }
+        public string GetAddressFromANS(string ANSname)
+        {
+            return (string)GetState(Sig2Hash.ANS(ANSname))?.value;
+        }
 
         internal SingleState GetState(string key)
         {
@@ -144,8 +148,12 @@ namespace minichain
 
             foreach (var tx in txs)
             {
+                tx.receiverAddr = ANSLookup.Resolve(this, tx.receiverAddr);
+
                 if (tx.type == TransactionType.Payment)
                     ApplyPaymentTransaction(tx, changes);
+                else if (tx.type == TransactionType.RegisterANS)
+                    ApplyRegisterANSTransaction(tx, changes);
                 else if (tx.type == TransactionType.Deploy)
                     ApplyDeployTransaction(newBlock, tx, changes);
                 else if (tx.type == TransactionType.Call)
@@ -170,10 +178,10 @@ namespace minichain
                 if (senderWallet == null)
                     senderWallet = sdb.GetState(currentBlock.hash, tx.senderAddr);
 
-                if (senderWallet.balance != tx._in)
-                    throw new InvalidOperationException();
-                if (senderWallet.balance >= tx._out + tx.fee)
-                    throw new InvalidOperationException();
+                //if (senderWallet.balance != tx._in)
+                //    throw new InvalidOperationException();
+                if (senderWallet.balance < tx._out + tx.fee)
+                    throw new InvalidOperationException("balance < tx.out + tx.fee");
 
                 // Actual OUT is (_out + fee)
                 senderWallet.balance -= tx._out + tx.fee;
@@ -191,6 +199,17 @@ namespace minichain
             receiverWallet.balance += tx._out;
             changes.Add(PushStateEntry.Create(
                 PushStateFlag.None, receiverWallet));
+        }
+
+        private void ApplyRegisterANSTransaction(Transaction tx, HashSet<PushStateEntry> changes)
+        {
+            changes.Add(PushStateEntry.Create(
+                PushStateFlag.NewAddressOnly,
+                new SingleState(StateType.ANSLookup)
+                {
+                    key = Sig2Hash.ANS(tx.ANSname),
+                    value = tx.receiverAddr
+                }));
         }
 
         private void ApplyDeployTransaction(Block newBlock, Transaction tx, HashSet<PushStateEntry> changes)

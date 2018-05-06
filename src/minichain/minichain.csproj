@@ -51,6 +51,7 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Chain\ANS\ANSLookup.cs" />
     <Compile Include="Chain\Block.cs" />
     <Compile Include="Chain\ChainStateProvider.cs" />
     <Compile Include="Chain\Consensus\Consensus.cs" />
