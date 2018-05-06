@@ -42,5 +42,15 @@ namespace minichain
 
             Assert.AreEqual(true, a == c);
         }
+
+        [TestMethod]
+        [ExpectedException(typeof(ArgumentOutOfRangeException))]
+        public void NegativeByMath()
+        {
+            udouble a = 23;
+            udouble b = 30;
+
+            udouble c = a - b;
+        }
     }
 }
