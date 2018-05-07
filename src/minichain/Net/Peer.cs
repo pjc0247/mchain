@@ -60,6 +60,8 @@ namespace minichain
             try
             {
                 var pkt = PacketBase.FromJson(e.Data);
+                //if (!(pkt is PktBroadcastNewBlock))
+                //Console.WriteLine(e.Data);
                 if (pkt == null) return;
 
                 pool.ProcessPacket(this, pkt);

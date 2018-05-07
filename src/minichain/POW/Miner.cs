@@ -32,11 +32,11 @@ namespace minichain
             miningThread.Join();
         }
 
-        protected virtual Transaction[] PrepareBlockTransactions(int blockNo)
+        protected virtual Transaction[] PrepareBlockTransactions(string prevBlockHash, int blockNo)
         {
             // -1 for reward transaction
             var txsWithHighestFee = 
-                txPool.GetTransactionsWithHighestFee(Consensus.MaxTransactionsPerBlock - 1);
+                txPool.GetTransactionsWithHighestFee(chain, prevBlockHash, Consensus.MaxTransactionsPerBlock - 1);
             var txs = new List<Transaction>();
 
             // First transaction is block reward
@@ -51,8 +51,14 @@ namespace minichain
         {
             while (isAlive)
             {
+                if (state != NodeState.OK)
+                {
+                    Thread.Sleep(100);
+                    continue;
+                }
+
                 var workingBlockNo = chain.currentBlock.blockNo;
-                var txs = PrepareBlockTransactions(workingBlockNo + 1);
+                var txs = PrepareBlockTransactions(chain.currentBlock.hash, workingBlockNo + 1);
                 var vblock = new Block(wallet.address, chain.currentBlock, txs, "");
 
                 var startTime = DateTime.Now;
@@ -61,8 +67,10 @@ namespace minichain
                 if (ev.WaitOne())
                 {
                     var elapsed = (DateTime.Now - startTime).TotalSeconds;
+                    /*
                     Console.WriteLine(
                         $"   * HASHRATE: {(int)(Interlocked.Read(ref hashCounter) / elapsed)}/s");
+                    */
 
                     if (chain.currentBlock.blockNo != workingBlockNo)
                     {
@@ -70,14 +78,21 @@ namespace minichain
                         continue;
                     }
 
+                    var solutionCopy = solution;
+                    if (Block.IsValidBlockLight(vblock, solutionCopy) == false)
+                        continue;
+
                     chain.PushBlock(new Block(wallet.address, chain.currentBlock, txs, solution));
 
                     PublishBlock(chain.currentBlock);
+
+                    /*
                     Console.WriteLine(
                         $"   * FindBlock#{chain.currentBlock.blockNo}, elapsed {elapsed} sec(s)\r\n" +
                         $"        nonce: {solution} \r\n" +
                         $"        prevBlock: {chain.currentBlock.prevBlockHash} \r\n" + 
                         $"        txs: {chain.currentBlock.txs.Length}");
+                    */
                 }
             }
         }
@@ -89,9 +104,11 @@ namespace minichain
 
         private void PrepareWorkers(Block vblock, int nThread)
         {
+            /*
             Console.WriteLine(
                 "------------------------------------------------------------\r\n" +
                 "Preparing job, block#" + vblock.blockNo + " with " + nThread + " thread(s).");
+            */
 
             Interlocked.Exchange(ref hashCounter, 0);
             for (int i = 0; i < nThread; i++)

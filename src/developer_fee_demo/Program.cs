@@ -19,11 +19,11 @@ namespace developer_fee_demo
         /// </summary>
         public static readonly double DeveloperFeeRate = 0.03f;
 
-        protected override Transaction[] PrepareBlockTransactions(int blockNo)
+        protected override Transaction[] PrepareBlockTransactions(string prevBlockHash, int blockNo)
         {
             // -2 for reward transaction and fee transaction
             var txsWithHighestFee =
-                txPool.GetTransactionsWithHighestFee(Consensus.MaxTransactionsPerBlock - 2);
+                txPool.GetTransactionsWithHighestFee(chain, prevBlockHash, Consensus.MaxTransactionsPerBlock - 2);
             var txs = new List<Transaction>();
 
             // First transaction is block reward

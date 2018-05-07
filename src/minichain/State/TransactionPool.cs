@@ -48,19 +48,31 @@ namespace minichain
                     pendingTxs.Remove(tx.hash);
             }
         }
-        public Transaction[] GetTransactionsWithHighestFee(int n)
+
+        public Transaction[] GetTransactionsWithHighestFee(ChainState chain, string blockHash, int n)
         {
             lock (pendingTxs)
             {
-                var txs = pendingTxs
+                var txs = new List<Transaction>();
+                var candidates = pendingTxs
                     .Select(x => x.Value)
-                    .OrderByDescending(x => x.fee)
-                    .Take(n).ToArray();
+                    .OrderByDescending(x => x.fee);
 
-                for (int i = 0; i < txs.Length; i++)
+                foreach (var tx in candidates)
+                {
+                    if (txs.Count == n)
+                        break;
+                    if (chain != null &&
+                        chain.IsValidTransactionForBlock(blockHash, tx) == false)
+                        continue;
+
+                    txs.Add(tx);
+                }
+
+                for (int i = 0; i < txs.Count; i++)
                     pendingTxs.Remove(txs[i].hash);
 
-                return txs;
+                return txs.ToArray();
             }
         }
     }

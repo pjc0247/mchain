@@ -14,7 +14,7 @@ namespace minichain
         {
             Console.CursorVisible = false;
             Console.Title = "minichain";
-            Copyright.PrintLogo();
+            //Copyright.PrintLogo();
 
             AppDomain.CurrentDomain.UnhandledException += OnUnhandledException;
 
@@ -23,10 +23,7 @@ namespace minichain
             Console.WriteLine(miner.wallet.Export());
             miner.Start();
 
-            udouble a = 1;
-            udouble b = 0;
-            Console.WriteLine(a + b);
-
+            Console.Title = "minichain: " + miner.peers.listeningPort;
 
             try
             {

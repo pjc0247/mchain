@@ -5,11 +5,13 @@ using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 
+using Newtonsoft.Json;
+
 namespace minichain
 {
     public class MemDB : IStorageBackend
     {
-        private Dictionary<string, object> mem = new Dictionary<string, object>();
+        private Dictionary<string, string> mem = new Dictionary<string, string>();
         private object memLock = new object();
 
         public MemDB()
@@ -24,19 +26,20 @@ namespace minichain
                 if (mem.ContainsKey(key) == false)
                     return default(T);
 
-                return (T)mem[key];
+                Console.WriteLine($"[DB::READ] {key}: \r\n       {mem[key]}");
+                return Serializer.Deserialize<T>(mem[key]);
             }
         }
         public void Write(string key, object value)
         {
             lock (memLock)
             {
-                mem[key] = value;
+                mem[key] = Serializer.Serialize(value);
 
                 if (value is SingleState ss)
                     Console.WriteLine($"[DB::WRITE] {key}: {ss.balance}");
                 else
-                    Console.WriteLine($"[DB::WRITE] {key}: {value}");
+                    Console.WriteLine($"[DB::WRITE] {key}: \r\n       {mem[key]}");
             }
         }
 

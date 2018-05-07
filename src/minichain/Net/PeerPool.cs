@@ -102,5 +102,10 @@ namespace minichain
         {
             nodeBase.ProcessPacket(sender, pkt);
         }
+
+        public Peer[] Pick(int n)
+        {
+            return peers.Take(n).Select(x => x.Key).ToArray();
+        }
     }
 }

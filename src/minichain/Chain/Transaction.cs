@@ -46,7 +46,7 @@ namespace minichain
         public string senderAddr, receiverAddr;
 
         public udouble fee;
-        public udouble _in, _out;
+        public udouble _out;
         public string dTag;
 
         public bool isSigned =>
@@ -124,7 +124,7 @@ namespace minichain
         /// <param name="txs">Other transactions which included in this block.</param>
         public static Transaction CreateRewardTransaction(int blockNo, string minerAddr, Transaction[] txs)
         {
-            var totalFee = txs.Sum(x => x.fee);
+            udouble totalFee = txs.Sum(x => x.fee);
 
             return new Transaction()
             {
@@ -143,7 +143,11 @@ namespace minichain
 
         public string GetTransactionSigniture()
         {
-            return Hash.Calc(senderAddr + receiverAddr + _in + _out + fee + version);
+            var objs = Hash.Calc(callArgs);
+            return Hash.Calc(senderAddr + receiverAddr + _out + fee + version
+                + contractProgram
+                + methodSignature + objs
+                + ANSname);
         }
 
         /// <summary>

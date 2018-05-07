@@ -16,10 +16,14 @@ namespace minichain
         public Wallet wallet { get; private set; }
         public ChainState chain { get; private set; }
 
+        public NodeState state { get; private set; }
+
         protected TransactionPool txPool { get; private set; }
 
         private RpcServer rpcServer;
         private Thread discoverThread;
+
+        private int syncTargetBlockNo = 0;
 
         public EndpointNode()
         {
@@ -33,6 +37,8 @@ namespace minichain
             Subscribe<PktNewTransaction>(OnNewTransaction);
             Subscribe<PktRequestPeers>(OnRequestPeers);
             Subscribe<PktResponsePeers>(OnResponsePeers);
+            Subscribe<PktRequestBlock>(OnRequestBlock);
+            Subscribe<PktResponseBlock>(OnResponseBlock);
 
             discoverThread = new Thread(DiscoverWorker);
             discoverThread.Start();
@@ -86,10 +92,10 @@ namespace minichain
                 peers.AddPeer(addr);
         }
 
-        private void OnRequestNextBlock(Peer sender, PktRequestNextBlock pkt)
+        private void OnRequestBlock(Peer sender, PktRequestBlock pkt)
         {
-            var block = chain.GetBlock(pkt.blockHash);
-            if (block == null) return;
+            var block = chain.GetBlock(pkt.blockNo);
+            if (block == null) { Console.WriteLine("D " + pkt.blockNo);  return; }
 
             SendPacket(sender, new PktResponseBlock()
             {
@@ -98,17 +104,31 @@ namespace minichain
         }
         private void OnResponseBlock(Peer sender, PktResponseBlock pkt)
         {
-            if (Block.IsValidBlockLight(pkt.block, pkt.block.nonce) == false)  
+            if (pkt.block == null) return;
+            if (Block.IsValidBlockLight(pkt.block, pkt.block.nonce) == false)
                 return;
 
-            if (pkt.block == null) return;
-                
-            if (chain.PushBlock(pkt.block))
+            if (chain.GetBlock(pkt.block.hash) == null)
             {
-                SendPacket(sender, new PktRequestNextBlock()
+                chain.SaveBlock(pkt.block);
+
+                SendPacket(sender, new PktRequestBlock()
                 {
-                    blockHash = pkt.block.hash
+                    blockNo = pkt.block.blockNo - 1
                 });
+            }
+            else
+            {
+                Console.WriteLine($"    {pkt.block.blockNo} / {syncTargetBlockNo}");
+
+                state = NodeState.SyncProcessing;
+                Console.WriteLine("===SYNC-PROCESSING====");
+
+                chain.ProcessSyncingAndUnsetSyncLock(pkt.block.blockNo, syncTargetBlockNo);
+
+                Console.WriteLine("===SYNC-DONE====");
+
+                state = NodeState.OK;
             }
         }
 
@@ -121,15 +141,26 @@ namespace minichain
         }
         protected virtual void OnNewBlock(Peer sender, PktBroadcastNewBlock pkt)
         {
+            if (state != NodeState.OK) return;
+
             // Peer sent invalid block.
             if (Block.IsValidBlockLight(pkt.block, pkt.block.nonce) == false)  { Console.WriteLine("Invalid block"); return; }
             // My block is longer than received
             if (chain.currentBlock.blockNo >= pkt.block.blockNo) return;
 
-            chain.PushBlock(pkt.block);
-            onNewBlockDiscoveredByOther?.Invoke(pkt.block);
+            // In case we need to sync blocks
+            if (chain.currentBlock.blockNo + 1 < pkt.block.blockNo)
+            {
+                chain.SaveBlock(pkt.block);
+                StartSyncing(sender, pkt.block.blockNo);
+                return;
+            }
 
-            txPool.RemoveTransactions(pkt.block.txs);
+            if (chain.PushBlock(pkt.block))
+            {
+                onNewBlockDiscoveredByOther?.Invoke(pkt.block);
+                txPool.RemoveTransactions(pkt.block.txs);
+            }
         }
         protected virtual void OnNewTransaction(Peer sender, PktNewTransaction pkt)
         {
@@ -141,6 +172,21 @@ namespace minichain
             if (Transaction.IsValidTransaction(pkt.tx) == false) return;
 
             txPool.AddTransaction(pkt.tx);
+        }
+
+        private void StartSyncing(Peer peer, int targetBlockNo)
+        {
+            Console.WriteLine("===SYNC====");
+
+            chain.SetSyncLock();
+
+            state = NodeState.SyncDownloading;
+            syncTargetBlockNo = targetBlockNo;
+
+            peer.SendPacket(new PktRequestBlock()
+            {
+                blockNo = targetBlockNo - 1
+            });
         }
     }
 }

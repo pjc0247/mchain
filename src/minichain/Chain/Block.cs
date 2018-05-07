@@ -33,7 +33,12 @@ namespace minichain
     {
         public static Block GenesisBlock()
         {
-            return new Block(null, null, new Transaction[] { }, "");
+            return new Block()
+                {
+                    difficulty = Consensus.CalcBlockDifficulty(0),
+                    txs = new Transaction[] { },
+                    hash = GetBlockHash(null, null, "0")
+                };
         }
         public static string GetBlockHash(string prevBlockHash, string merkleRootHash, string nonce)
         {
@@ -60,13 +65,15 @@ namespace minichain
             var totalFee = block.txs.Sum(x => x.fee);
 
             // 1. txs MUST be non-empty (except genesis-block)
-            if (block.txs.Length == 0 || block.txs.Length > Consensus.MaxTransactionsPerBlock) return false;
+            if (block.txs.Length == 0 || block.txs.Length > Consensus.MaxTransactionsPerBlock)
+                return false;
             // 2. Check the reward transaction. (txs[0])
             if (block.txs[0]._out != Consensus.CalcBlockReward(block.blockNo) + totalFee ||
                 block.txs[0].senderAddr != Consensus.RewardSenderAddress ||
                 block.txs[0].receiverAddr != block.minerAddr) return false;
             // 3. Has valid minerAddress
-            if (string.IsNullOrEmpty(block.minerAddr)) return false;
+            if (string.IsNullOrEmpty(block.minerAddr))
+                return false;
             // 4. Has proper difficulty
             if (Consensus.CalcBlockDifficulty(block.blockNo) != block.difficulty) return false;
 
@@ -99,6 +106,9 @@ namespace minichain
         }
         public Block(string _minerAddr, Block _prev, Transaction[] _txs, string _nonce)
         {
+            if (_prev == null)
+                throw new ArgumentNullException(nameof(_prev));
+
             var merkleTree = new MerkleTree(_txs);
 
             minerAddr = _minerAddr;
@@ -106,14 +116,8 @@ namespace minichain
             nonce = _nonce;
             txs = _txs;
 
-            // GENESIS-BLOCK
-            if (_prev == null)
-                prevBlockHash = "";
-            else
-            {
-                prevBlockHash = _prev.hash;
-                blockNo = _prev.blockNo + 1;
-            }
+            prevBlockHash = _prev.hash;
+            blockNo = _prev.blockNo + 1;
 
             difficulty = Consensus.CalcBlockDifficulty(blockNo);
             hash = GetBlockHash(prevBlockHash, merkleRootHash, nonce);

@@ -21,7 +21,7 @@ namespace minichain
     {
         public string key;
 
-        private Dictionary<string, object> memBuffer = new Dictionary<string, object>();
+        private Dictionary<string, string> memBuffer = new Dictionary<string, string>();
         private Thread flushThread;
         private ReaderWriterLockSlim rwLock = new ReaderWriterLockSlim();
 
@@ -55,10 +55,10 @@ namespace minichain
             while (isAlive)
             {
                 rwLock.EnterWriteLock();
-                var localCopy = new Dictionary<string, object>(memBuffer);
+                var localCopy = new Dictionary<string, string>(memBuffer);
                 memBuffer.Clear();
-                rwLock.ExitWriteLock();
 
+                // [FIXME] PERFORMANCE SPIKE
                 foreach (var pair in localCopy)
                 {
                     try
@@ -67,6 +67,7 @@ namespace minichain
                     }
                     catch (Exception e) { }
                 }
+                rwLock.ExitWriteLock();
 
                 Thread.Sleep(1000);
             }
@@ -96,13 +97,12 @@ namespace minichain
         public void Write(string key, object value)
         {
             rwLock.EnterWriteLock();
-            memBuffer[key] = value;
+            memBuffer[key] = Serializer.Serialize(value, true);
             rwLock.ExitWriteLock();
         }
-        private void WriteImmediateFlush(string key, object value)
+        private void WriteImmediateFlush(string key, string value)
         {
-            File.WriteAllText(GetFilePath(key),
-                JsonConvert.SerializeObject(value, Formatting.Indented));
+            File.WriteAllText(GetFilePath(key), value);
         }
         public T Read<T>(string key)
         {
@@ -110,7 +110,7 @@ namespace minichain
             try
             {
                 if (memBuffer.ContainsKey(key))
-                    return (T)memBuffer[key];
+                    return Serializer.Deserialize<T>(memBuffer[key]);
             }
             finally
             {
@@ -142,7 +142,7 @@ namespace minichain
             try
             {
                 var json = File.ReadAllText(GetFilePath(key), Encoding.UTF8);
-                value = JsonConvert.DeserializeObject<T>(json);
+                value = Serializer.Deserialize<T>(json);
 
                 return true;
             }

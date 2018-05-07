@@ -8,7 +8,7 @@ namespace minichain
 {
     public struct udouble : IComparable
     {
-        private double _value;
+        public double _value;
 
         public udouble(double val)
         {

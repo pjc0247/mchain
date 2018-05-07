@@ -69,9 +69,9 @@ namespace minichain
         public string[] addrs;
     }
 
-    public class PktRequestNextBlock : PacketBase
+    public class PktRequestBlock : PacketBase
     {
-        public string blockHash;
+        public int blockNo;
     }
     public class PktResponseBlock : PacketBase
     {

@@ -94,7 +94,6 @@ namespace minichain
             {
                 type = TransactionType.Payment,
 
-                _in = chain.GetBalance(address),
                 _out = amount,
 
                 senderAddr = address,

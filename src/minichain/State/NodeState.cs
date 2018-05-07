@@ -8,7 +8,9 @@ namespace minichain
 {
     public enum NodeState
     {
-        Syncing,
-        Synced
+        OK,
+
+        SyncDownloading,
+        SyncProcessing
     }
 }

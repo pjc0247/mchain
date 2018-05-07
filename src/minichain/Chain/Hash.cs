@@ -36,5 +36,22 @@ namespace minichain
         {
             return Calc2(Calc2(a, b), c);
         }
+
+        public static string Calc(params object[] objs)
+        {
+            string g = Calc("");
+
+            if (objs == null) return g;
+
+            foreach (var obj in objs)
+            {
+                if (obj == null) continue;
+
+                g = Calc2(g, obj.ToString());
+                g = Calc2(g, obj.GetType().FullName);
+            }
+
+            return Calc2(objs.Length.ToString(), g);
+        }
     }
 }

@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 
 using minivm;
@@ -18,18 +19,24 @@ namespace minichain
         public BlockConfirmedDelegate onBlockConfirmed { get; set; }
 
         private IStorageBackend db;
-        private StateDB sdb;
+        private KeyValueDB blockDB;
+        private KeyValueDB blockHashLookupDB;
+        private StateDB stateDB;
 
         private VM<ChainStateProvider> vm;
 
+        private int syncLock = 0;
+
         public ChainState()
         {
-#if DEBUG__
+#if UNITTEST
             db = new MemDB();
 #else
             db = new FileDB();
 #endif
-            sdb = new StateDB(db);
+            stateDB = new StateDB(db);
+            blockDB = new KeyValueDB("block/", db);
+            blockHashLookupDB = new KeyValueDB("blockhash/",db);
 
             vm = new VM<ChainStateProvider>();
 
@@ -38,18 +45,46 @@ namespace minichain
             PushBlock(Block.GenesisBlock());
         }
 
+        public bool IsValidTransactionForBlock(string blockHash, Transaction tx)
+        {
+            var balance = GetBalanceInBlock(tx.senderAddr, blockHash);
+
+            if (balance < tx._out + tx.fee)
+                return false;
+
+            if (tx.type == TransactionType.Deploy)
+            {
+                if (GetStateInBlock(tx.receiverAddr, blockHash) != null)
+                    return false;
+            }
+            else if (tx.type == TransactionType.RegisterANS)
+            {
+                if (GetStateInBlock(Sig2Hash.ANS(tx.ANSname), blockHash) != null)
+                    return false;
+            }
+
+            return true;
+        }
+
         public Transaction GetTransaction(string transactionHash)
         {
             return db.Read<Transaction>($"tx/{transactionHash}");
         }
         public Block GetBlock(string blockHash)
         {
-            return db.Read<Block>($"block/{blockHash}");
+            return blockDB.Get<Block>(blockHash);
+        }
+        public Block GetBlock(int blockNo)
+        {
+            var lookUp = blockHashLookupDB.Get($"{blockNo}");
+            if (string.IsNullOrEmpty(lookUp))
+                throw new ArgumentException($"No lookup for #{blockNo}");
+            return GetBlock(lookUp);
         }
 
         public double GetBalanceInBlock(string address, string blockHash)
         {
-            return sdb.GetState(blockHash, address).balance;
+            return stateDB.GetState(blockHash, address).balance;
         }
         public double GetBalance(string address)
         {
@@ -64,21 +99,30 @@ namespace minichain
             return (string)GetState(Sig2Hash.ANS(ANSname))?.value;
         }
 
+        internal SingleState GetStateInBlock(string key, string blockHash)
+        {
+            return stateDB.GetState(blockHash, key);
+        }
         internal SingleState GetState(string key)
         {
-            return sdb.GetState(currentBlock.hash, key);
+            return GetStateInBlock(key, currentBlock.hash);
         }
         internal string GetContract(string key)
         {
-            return (string)sdb.GetState(currentBlock.hash, key)?.value;
+            return (string)stateDB.GetState(currentBlock.hash, key)?.value;
         }
 
-        internal bool PushBlock(Block block)
+        internal void SaveBlock(Block block)
         {
+            blockDB.Set(block.hash, block);
+            blockHashLookupDB.Set($"{block.blockNo}", block.hash);
+        }
+        internal bool PushBlock(Block block, bool isSync = false)
+        {
+            if (isSync == false && Thread.VolatileRead(ref syncLock) == 1)
+                return false;
             if (block == null) 
                 throw new ArgumentNullException(nameof(block));
-            if (currentBlock == null)
-                currentBlock = block;
 
             try
             {
@@ -87,10 +131,13 @@ namespace minichain
                     // In case that new block is came from another branch:
                     if (currentBlock != null &&
                         block.prevBlockHash != currentBlock.hash)
-                        ;
+                    {
+                        //throw new ArgumentException($"input block is not in sequence. prev({currentBlock.blockNo}) -> input({block.blockNo})");
+                        //var brancedBlock = TrackBranchedBlock(currentBlock, block);
+                        return false;
+                    }
 
-                    db.Write($"block/{block.hash}", block);
-
+                    SaveBlock(block);
                     ApplyTransactions(block);
 
                     // CONFIRMED
@@ -107,6 +154,33 @@ namespace minichain
             }
 
             return false;
+        }
+        internal void RevertTo(Block block)
+        {
+            if (block == null)
+                throw new ArgumentNullException(nameof(block));
+
+            lock (blockLock)
+            {
+                currentBlock = block;
+            }
+        }
+        internal void SetSyncLock()
+        {
+            Thread.VolatileWrite(ref syncLock, 1);
+        }
+        internal void ProcessSyncingAndUnsetSyncLock(int startBlockNo, int targetBlockNo)
+        {
+            RevertTo(GetBlock(startBlockNo));
+
+            var start = startBlockNo + 1;
+            for (int i = start; i <= targetBlockNo; i++)
+            {
+                if (PushBlock(GetBlock(i), true))
+                    throw new InvalidOperationException("SyncError");
+            }
+
+            Thread.VolatileWrite(ref syncLock, 0);
         }
 
         /// <summary>
@@ -164,7 +238,7 @@ namespace minichain
                 // TODO: 공통된 fee 차감 코드
             }
 
-            sdb.PushState(currentBlock.hash, newBlock.hash, changes.ToArray());
+            stateDB.PushState(currentBlock?.hash, newBlock.hash, changes.ToArray());
         }
 
         private void ApplyPaymentTransaction(Transaction tx, HashSet<PushStateEntry> changes)
@@ -176,7 +250,7 @@ namespace minichain
                     ?.state;
 
                 if (senderWallet == null)
-                    senderWallet = sdb.GetState(currentBlock.hash, tx.senderAddr);
+                    senderWallet = stateDB.GetState(currentBlock.hash, tx.senderAddr);
 
                 //if (senderWallet.balance != tx._in)
                 //    throw new InvalidOperationException();
@@ -194,7 +268,7 @@ namespace minichain
                 ?.state;
 
             if (receiverWallet == null)
-                receiverWallet = sdb.GetState(currentBlock.hash, tx.receiverAddr);
+                receiverWallet = stateDB.GetState(currentBlock.hash, tx.receiverAddr);
 
             receiverWallet.balance += tx._out;
             changes.Add(PushStateEntry.Create(
