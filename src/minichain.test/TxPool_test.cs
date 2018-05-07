@@ -34,7 +34,7 @@ namespace minichain.test
             pool.AddTransaction(tx3);
             pool.AddTransaction(tx4);
 
-            var txs = pool.GetTransactionsWithHighestFee(3);
+            var txs = pool.GetTransactionsWithHighestFee(null, null, 3);
 
             Assert.AreEqual(3, txs.Length);
             Assert.AreEqual(4, txs[0].fee);
@@ -75,7 +75,7 @@ namespace minichain.test
 
             Assert.AreEqual(pool.count, 1);
             Assert.AreEqual(
-                pool.GetTransactionsWithHighestFee(1)[0].fee,
+                pool.GetTransactionsWithHighestFee(null, null, 1)[0].fee,
                 1);
         }
     }
