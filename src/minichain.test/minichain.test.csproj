@@ -51,6 +51,8 @@
     <Compile Include="Block_test.cs" />
     <Compile Include="Chain_test.cs" />
     <Compile Include="Cvt_test.cs" />
+    <Compile Include="dbtest\KeyValueDB_test.cs" />
+    <Compile Include="dbtest\MemDB_test.cs" />
     <Compile Include="udouble_test.cs" />
     <Compile Include="RSA_test.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
