@@ -6,6 +6,12 @@ using System.Threading.Tasks;
 
 namespace minichain
 {
+    // YOU CAN OVERRIDE THIS CLASS TO
+    //   WRITE EXTENDED CONFIG FOR YOUR 
+    //   CUSTOM NODE.
+    //
+    // SEE `MinerNodeConfig.cs`.
+
     public class NodeConfig
     {
         // RPC
