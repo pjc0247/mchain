@@ -14,14 +14,18 @@ namespace minichain
     {
         public int count => pendingTxs.Count;
 
+        private int maxSize;
         private Dictionary<string, Transaction> pendingTxs = new Dictionary<string, Transaction>();
 
-        public TransactionPool()
+        public TransactionPool(int _maxSize = 1024)
         {
+            maxSize = _maxSize;
         }
 
         public void AddTransaction(Transaction tx)
         {
+            if (count >= maxSize) return;
+
             lock (pendingTxs)
             {
                 // Already has same tx in pool.
@@ -34,6 +38,8 @@ namespace minichain
         }
         public void AddTransactions(Transaction[] txs)
         {
+            if (count >= maxSize) return;
+
             lock (pendingTxs)
             {
                 foreach (var tx in txs)

@@ -13,6 +13,8 @@ namespace minichain
     {
         public EndpointNode node { get; private set; }
 
+        private WebSocketServer ws;
+
         public RpcServer(EndpointNode _node, int port)
         {
             node = _node;
@@ -20,7 +22,16 @@ namespace minichain
             var ws = new WebSocketServer(port);
             ws.ReuseAddress = true;
             ws.AddWebSocketService("/", () => new RpcSession(this));
+        }
+
+        public void Start()
+        {
             ws.Start();
+        }
+        public void Stop()
+        {
+            if (ws.IsListening)
+                ws.Stop();
         }
     }
 }

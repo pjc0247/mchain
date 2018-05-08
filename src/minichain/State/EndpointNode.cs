@@ -13,6 +13,8 @@ namespace minichain
 
         protected NewBlockDiscoveredDelegate onNewBlockDiscoveredByOther;
 
+        public NodeConfig cfg { get; private set; }
+
         public Wallet wallet { get; private set; }
         public ChainState chain { get; private set; }
 
@@ -25,13 +27,22 @@ namespace minichain
 
         private int syncTargetBlockNo = 0;
 
-        public EndpointNode()
+        /// <summary>
+        /// Creates a node with default configuration.
+        /// </summary>
+        public EndpointNode() : this (new NodeConfig())
         {
-            rpcServer = new RpcServer(this, 9916);
+        }
+        public EndpointNode(NodeConfig _cfg)
+        {
+            cfg = _cfg;
+            rpcServer = new RpcServer(this, cfg.rpcListenPort);
+            if (cfg.useRpcServer)
+                rpcServer.Start();
 
             chain = new ChainState();
             wallet = new Wallet(chain);
-            txPool = new TransactionPool();
+            txPool = new TransactionPool(cfg.maxTxpoolSize);
 
             Subscribe<PktBroadcastNewBlock>(OnNewBlock);
             Subscribe<PktNewTransaction>(OnNewTransaction);
@@ -94,7 +105,6 @@ namespace minichain
 
         private void OnRequestBlock(Peer sender, PktRequestBlock pkt)
         {
-            Console.WriteLine("SEND BLOCK " + pkt.blockNo);
             var block = chain.GetBlock(pkt.blockNo);
             if (block == null) return;
 

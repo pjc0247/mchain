@@ -29,6 +29,10 @@ namespace minichain.test
             db.Stash("a");
 
             Assert.AreEqual(null, db.Read<string>("a"));
+
+            // write it again
+            db.Write("a", "HELLO");
+            Assert.AreEqual("HELLO", db.Read<string>("a"));
         }
     }
 }
