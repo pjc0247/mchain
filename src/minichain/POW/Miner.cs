@@ -15,6 +15,16 @@ namespace minichain
         private Thread miningThread;
         private long hashCounter = 0;
 
+        private new MinerNodeConfig cfg;
+
+        public Miner() : this(new MinerNodeConfig())
+        {
+        }
+        public Miner(MinerNodeConfig _cfg) : base(_cfg)
+        {
+            cfg = _cfg;
+        }
+
         public void Start()
         {
             onNewBlockDiscoveredByOther += OnNewBlockDiscovered;
@@ -62,7 +72,7 @@ namespace minichain
                 var vblock = new Block(wallet.address, chain.currentBlock, txs, "");
 
                 var startTime = DateTime.Now;
-                PrepareWorkers(vblock, 8);
+                PrepareWorkers(vblock, Math.Min(cfg.maxMiningThreads, Environment.ProcessorCount));
 
                 if (ev.WaitOne())
                 {
