@@ -53,7 +53,6 @@
   <ItemGroup>
     <Compile Include="Chain\ANS\ANSLookup.cs" />
     <Compile Include="Chain\Block.cs" />
-    <Compile Include="Chain\BlockPushResult.cs" />
     <Compile Include="Chain\ChainStateProvider.cs" />
     <Compile Include="Chain\Consensus\Consensus.cs" />
     <Compile Include="Chain\Hash.cs" />
@@ -72,6 +71,7 @@
     <Compile Include="DB\Model\PushStateEntry.cs" />
     <Compile Include="DB\Model\SingleState.cs" />
     <Compile Include="DB\StateDB.cs" />
+    <Compile Include="Exceptions\BlockValidationException.cs" />
     <Compile Include="Net\HardCodedSeeds.cs" />
     <Compile Include="Net\Packet\NonPublicPropertiesResolver.cs" />
     <Compile Include="Net\RPC\Packets.cs" />

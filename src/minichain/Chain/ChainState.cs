@@ -142,7 +142,7 @@ namespace minichain
 
                     // CONFIRMED
                     currentBlock = block;
-
+                    
                     onBlockConfirmed?.Invoke(block);
 
                     return true;
@@ -233,7 +233,7 @@ namespace minichain
                 else if (tx.type == TransactionType.Call)
                     ApplyCallTransaction(tx, changes);
                 else
-                    throw new InvalidOperationException("Unknown txtype: " + tx.type);
+                    throw new BlockValidationException("Unknown txtype: " + tx.type);
 
                 // TODO: 공통된 fee 차감 코드
             }
@@ -255,7 +255,7 @@ namespace minichain
                 //if (senderWallet.balance != tx._in)
                 //    throw new InvalidOperationException();
                 if (senderWallet.balance < tx._out + tx.fee)
-                    throw new InvalidOperationException("balance < tx.out + tx.fee");
+                    throw new BlockValidationException("balance < tx.out + tx.fee");
 
                 // Actual OUT is (_out + fee)
                 senderWallet.balance -= tx._out + tx.fee;
@@ -307,7 +307,7 @@ namespace minichain
         {
             var contract = GetContract(tx.receiverAddr);
             if (contract == null)
-                throw new InvalidOperationException("Invalid contract addr");
+                throw new BlockValidationException("Invalid contract addr");
 
             (var abi, var insts) = BConv.FromBase64(contract);
             var sp = (ChainStateProvider)vm.stateProvider;

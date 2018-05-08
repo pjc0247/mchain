@@ -94,8 +94,9 @@ namespace minichain
 
         private void OnRequestBlock(Peer sender, PktRequestBlock pkt)
         {
+            Console.WriteLine("SEND BLOCK " + pkt.blockNo);
             var block = chain.GetBlock(pkt.blockNo);
-            if (block == null) { Console.WriteLine("D " + pkt.blockNo);  return; }
+            if (block == null) return;
 
             SendPacket(sender, new PktResponseBlock()
             {

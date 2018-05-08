@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections.Concurrent;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -16,7 +17,7 @@ namespace minichain
         public PeerPool peers { get; private set; }
 
         private Dictionary<Type, Action<Peer, object>> subscribers = new Dictionary<Type, Action<Peer, object>>();
-        private HashSet<string> processedPackets = new HashSet<string>();
+        private ConcurrentSet<string> processedPackets = new ConcurrentSet<string>();
 
         public NodeBase()
         {
@@ -40,7 +41,7 @@ namespace minichain
             if (packet == null || string.IsNullOrEmpty(packet.pid)) return;
             // Since we're currently using p2p networking,
             //   same packet can be delivered more than once
-            if (processedPackets.Contains(packet.pid)) return;
+            if (processedPackets.TryAdd(packet.pid) == false) return;
 
             if (subscribers.ContainsKey(packet.GetType()))
             {
@@ -53,9 +54,6 @@ namespace minichain
                     Console.WriteLine(e);
                 }
             }
-
-            // Mark as processed
-            processedPackets.Add(packet.pid);
 
             if (packet is BroadcastPacket bpacket)
                 BroadcastPacket(bpacket);
