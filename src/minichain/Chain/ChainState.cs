@@ -165,6 +165,10 @@ namespace minichain
                 currentBlock = block;
             }
         }
+
+        /// <summary>
+        /// Mark status as `IN_SYNC` to prevent push blocks
+        /// </summary>
         internal void SetSyncLock()
         {
             Thread.VolatileWrite(ref syncLock, 1);
@@ -176,7 +180,7 @@ namespace minichain
             var start = startBlockNo + 1;
             for (int i = start; i <= targetBlockNo; i++)
             {
-                if (PushBlock(GetBlock(i), true))
+                if (PushBlock(GetBlock(i), true) == false)
                     throw new InvalidOperationException("SyncError");
             }
 

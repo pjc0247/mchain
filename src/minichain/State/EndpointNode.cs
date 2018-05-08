@@ -109,6 +109,8 @@ namespace minichain
             if (Block.IsValidBlockLight(pkt.block, pkt.block.nonce) == false)
                 return;
 
+            Console.WriteLine($"    {pkt.block.blockNo} / {syncTargetBlockNo}");
+
             if (chain.GetBlock(pkt.block.hash) == null)
             {
                 chain.SaveBlock(pkt.block);
@@ -120,8 +122,6 @@ namespace minichain
             }
             else
             {
-                Console.WriteLine($"    {pkt.block.blockNo} / {syncTargetBlockNo}");
-
                 state = NodeState.SyncProcessing;
                 Console.WriteLine("===SYNC-PROCESSING====");
 

@@ -63,6 +63,7 @@
     <Compile Include="Chain\Wallet.cs" />
     <Compile Include="Chain\ChainState.cs" />
     <Compile Include="DataStructure\CappedList.cs" />
+    <Compile Include="DataStructure\ConcurrentSet.cs" />
     <Compile Include="DB\Backends\FileDB.cs" />
     <Compile Include="DB\IStorageBackend.cs" />
     <Compile Include="DB\Backends\MemDB.cs" />
