@@ -14,7 +14,7 @@ namespace minichain
         {
             Console.CursorVisible = false;
             Console.Title = "minichain";
-            //Copyright.PrintLogo();
+            Copyright.PrintLogo();
 
             AppDomain.CurrentDomain.UnhandledException += OnUnhandledException;
 

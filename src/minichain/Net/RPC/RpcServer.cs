@@ -19,7 +19,7 @@ namespace minichain
         {
             node = _node;
 
-            var ws = new WebSocketServer(port);
+            ws = new WebSocketServer(port);
             ws.ReuseAddress = true;
             ws.AddWebSocketService("/", () => new RpcSession(this));
         }

@@ -62,6 +62,8 @@
     <Compile Include="Chain\Transaction.cs" />
     <Compile Include="Chain\Wallet.cs" />
     <Compile Include="Chain\ChainState.cs" />
+    <Compile Include="Config\MinerNodeConfig.cs" />
+    <Compile Include="Config\NodeConfig.cs" />
     <Compile Include="DataStructure\CappedList.cs" />
     <Compile Include="DataStructure\ConcurrentSet.cs" />
     <Compile Include="DB\Backends\FileDB.cs" />
