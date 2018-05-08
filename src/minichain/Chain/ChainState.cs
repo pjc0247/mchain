@@ -112,11 +112,19 @@ namespace minichain
             return (string)stateDB.GetState(currentBlock.hash, key)?.value;
         }
 
+        /// <summary>
+        /// Saves the block into DB. (Not a chain)
+        /// </summary>
+        /// <param name="block"></param>
         internal void SaveBlock(Block block)
         {
             blockDB.Set(block.hash, block);
             blockHashLookupDB.Set($"{block.blockNo}", block.hash);
         }
+        /// <summary>
+        /// Pushes the given blcok into current chain.
+        /// Input block must be a next block of the `currentBlock`.
+        /// </summary>
         internal bool PushBlock(Block block, bool isSync = false)
         {
             if (isSync == false && Thread.VolatileRead(ref syncLock) == 1)
@@ -155,6 +163,9 @@ namespace minichain
 
             return false;
         }
+        /// <summary>
+        /// Force reverts the current chain.
+        /// </summary>
         internal void RevertTo(Block block)
         {
             if (block == null)
