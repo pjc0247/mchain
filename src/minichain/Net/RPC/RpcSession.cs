@@ -30,6 +30,8 @@ namespace minichain
         {
             try
             {
+                //server.ProcessPacket(this, e.Data);
+
                 var data = JsonConvert.DeserializeObject<Dictionary<string, object>>(e.Data);
                 if (data == null || data.ContainsKey("type") == false) return;
                 var type = (string)data["type"];

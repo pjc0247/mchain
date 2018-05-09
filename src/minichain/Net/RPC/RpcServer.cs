@@ -7,6 +7,8 @@ using System.Threading.Tasks;
 using WebSocketSharp;
 using WebSocketSharp.Server;
 
+using Newtonsoft.Json;
+
 namespace minichain
 {
     internal class RpcServer
@@ -14,6 +16,7 @@ namespace minichain
         public EndpointNode node { get; private set; }
 
         private WebSocketServer ws;
+        private Dictionary<string, Action<string>> handlers = new Dictionary<string, Action<string>>();
 
         public RpcServer(EndpointNode _node, int port)
         {
@@ -32,6 +35,26 @@ namespace minichain
         {
             if (ws.IsListening)
                 ws.Stop();
+        }
+
+        public void RegisterHandler<T>(string type, Action<T> callback)
+        {
+            if (string.IsNullOrEmpty(type))
+                throw new ArgumentException(nameof(type));
+
+            handlers[type] = (json) => {
+                callback(JsonConvert.DeserializeObject<T>(json));
+            };
+        }
+        public void ProcessPacket(RpcSession receiver, string json)
+        {
+            var data = JsonConvert.DeserializeObject<Dictionary<string, object>>(json);
+            if (data == null || data.ContainsKey("type") == false) return;
+            var type = (string)data["type"];
+
+            if (handlers.ContainsKey(type) == false) return;
+
+            handlers[type]?.Invoke(json);
         }
     }
 }
