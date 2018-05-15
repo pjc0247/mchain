@@ -7,6 +7,9 @@ using System.Threading.Tasks;
 
 namespace minichain
 {
+    /// <summary>
+    /// Basic multithreaded miner implementation
+    /// </summary>
     public class Miner : EndpointNode
     {
         private string solution;
@@ -61,6 +64,7 @@ namespace minichain
         {
             while (isAlive)
             {
+                // Unable to mine a new block until syncing is done.
                 if (state != NodeState.OK)
                 {
                     Thread.Sleep(100);
@@ -107,8 +111,12 @@ namespace minichain
             }
         }
 
+        /// <summary>
+        /// Got a new block from other.
+        /// </summary>
         private void OnNewBlockDiscovered(Block block)
         {
+            // This will cancel current mining
             ev.Set();
         }
 

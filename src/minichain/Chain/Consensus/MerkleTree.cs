@@ -6,6 +6,10 @@ using System.Threading.Tasks;
 
 namespace minichain
 {
+    /// <summary>
+    /// Basic merkle tree implementation.
+    /// </summary>
+    /// <see cref="https://en.wikipedia.org/wiki/Merkle_tree"/>
     public class MerkleTree
     {
         private class MerkleNode

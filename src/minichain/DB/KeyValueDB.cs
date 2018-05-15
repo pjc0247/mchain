@@ -6,6 +6,9 @@ using System.Threading.Tasks;
 
 namespace minichain
 {
+    /// <summary>
+    /// Basic KEY/VALUE storage
+    /// </summary>
     public class KeyValueDB
     {
         private string prefix = "";
