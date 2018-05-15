@@ -10,7 +10,7 @@
                                                              pjc0247@naver.com
       
 
-A fork of [minichain](https://github.com/pjc0247/minichain/tree/minimal-impl) which implements more advanced features such as VM and ZUZUZUZU stuffs.
+A fork of [minichain](https://github.com/pjc0247/minichain/tree/minimal-impl) which implements more advanced features such as VM and ZUZUZUZU stuffs.<br>
 (minichain project pursues the minimal codes, That's why I made another project.)
 
 __[Documentation](docs/)__<br>
@@ -22,7 +22,7 @@ You can learn
   * Consensus based on `Proof of work`
   * Store/Retrive data(state) into blockchain
   * Signing transaction (Using asymmetric key validation)
-
+  * Execute a program on blockchain network via `minidity`
 __You can also learn (See example projects)__
   * Create a hardfork update to ongoing blockchain.
   * Bad node attack 
