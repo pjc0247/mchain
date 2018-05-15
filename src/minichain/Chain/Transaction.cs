@@ -94,9 +94,14 @@ namespace minichain
             {
                 if (string.IsNullOrEmpty(tx.ANSname)) return false;
             }
+            // UNKNOWN TX.TYPE (Maybe incompatible version)
+            else
+                return false;
 
+            // Check the publicKey is valid.
             if (Hash.Calc(tx.publicKey) != tx.senderAddr)
                 return false;
+            // Check the signature is valid
             if (RSA.VerifyWithPrivateKey(tx.publicKey, tx.GetTransactionSigniture(), tx.encryptedSign) == false)
                 return false;
 
@@ -133,6 +138,14 @@ namespace minichain
                 fee = 0,
                 _out = Consensus.CalcBlockReward(blockNo) + totalFee
             };
+        }
+
+        /// <summary>
+        /// TODO
+        /// </summary>
+        public static Transaction CreateMultisendTransaction()
+        {
+            return null;
         }
 
         public Transaction()
