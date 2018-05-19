@@ -44,6 +44,9 @@ namespace minichain
 
         public void Transfer(string receiverAddress, double amount)
         {
+            // TODO: BUG
+            // state에서 가져오면 잔고 마이너스 가능
+
             var contractState = state.GetState(contractAddr);
             var receiverState = state.GetState(receiverAddress);
 
