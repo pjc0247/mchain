@@ -46,13 +46,13 @@ namespace minichain
             db = _db;
         }
 
-        private DataHeader ReadHeader(string stateRoot)
+        private DataHeader ReadHeader(Hash stateRoot)
         {
             var header = db.Read<DataHeader>($"root/{stateRoot}");
             if (header == null) return DataHeader.EmptyState();
             return header;
         }
-        private string WriteHeader(string stateRoot, DataHeader header)
+        private string WriteHeader(Hash stateRoot, DataHeader header)
         {
             db.Write($"root/{stateRoot}", header);
             return stateRoot;
@@ -69,11 +69,11 @@ namespace minichain
             return uid;
         }
 
-        private string GetIndexFromHash(string address)
+        private string GetIndexFromHash(Hash address)
         {
-            return address.Substring(0, 2);
+            return address.str.Substring(0, 2);
         }
-        public SingleState GetState(string stateRoot, string address)
+        public SingleState GetState(Hash stateRoot, Hash address)
         {
             var header = ReadHeader(stateRoot);
             var index = GetIndexFromHash(address);
@@ -101,7 +101,7 @@ namespace minichain
         /// <summary>
         /// Pushes the changes into database.
         /// </summary>
-        public string PushState(string prevStateRoot, string stateRoot, PushStateEntry[] changedStates)
+        public string PushState(Hash prevStateRoot, Hash stateRoot, PushStateEntry[] changedStates)
         {
             DataHeader header = null;
 

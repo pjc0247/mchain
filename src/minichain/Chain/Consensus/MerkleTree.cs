@@ -14,7 +14,7 @@ namespace minichain
     {
         private class MerkleNode
         {
-            public string hash;
+            public Hash hash;
 
             public int parent;
             public int left, right;

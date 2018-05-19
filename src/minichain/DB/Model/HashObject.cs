@@ -8,7 +8,7 @@ namespace minichain
 {
     public class HashObject
     {
-        public virtual string hash { get; protected set; }
+        public virtual Hash hash { get; protected set; }
 
         /// <summary>
         /// For internal use

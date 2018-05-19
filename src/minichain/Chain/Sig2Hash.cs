@@ -8,12 +8,12 @@ namespace minichain
 {
     internal class Sig2Hash
     {
-        public static string ANS(string name)
+        public static Hash ANS(Hash name)
         {
             return Hash.Calc2("ANS", name);
         }
 
-        public static string Field(string contractAddr, string fieldSignature)
+        public static Hash Field(Hash contractAddr, Hash fieldSignature)
         {
             return Hash.Calc2(contractAddr, fieldSignature);
         }

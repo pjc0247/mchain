@@ -148,6 +148,7 @@ namespace minichain
             }
             catch (Exception e)
             {
+                Console.WriteLine(e);
                 value = default(T);
                 return false;
             }

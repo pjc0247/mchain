@@ -49,6 +49,10 @@
     <None Include="App.config" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\mcore\mcore.csproj">
+      <Project>{472ea68b-d36a-484a-806d-f11ac3d9d81f}</Project>
+      <Name>mcore</Name>
+    </ProjectReference>
     <ProjectReference Include="..\minichain\minichain.csproj">
       <Project>{0a876fa1-46a7-44f7-994c-0e445cb05e5e}</Project>
       <Name>minichain</Name>

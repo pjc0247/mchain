@@ -1,0 +1,16 @@
+<?xml version="1.0"?>
+<package >
+  <metadata>
+    <id>mcore</id>
+    <version>0.1.0</version>
+    <title>mcore</title>
+    <authors>pjc0247</authors>
+    <owners>pjc0247</owners>
+    <projectUrl>https://github.com/pjc0247/mchain</projectUrl>
+    <requireLicenseAcceptance>false</requireLicenseAcceptance>
+    <description>mchain core lib</description>
+    <releaseNotes>mchain core lib</releaseNotes>
+    <copyright>Copyright 2018</copyright>
+    <tags>mchain minichain</tags>
+  </metadata>
+</package>

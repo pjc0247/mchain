@@ -45,7 +45,7 @@ namespace minichain
             PushBlock(Block.GenesisBlock());
         }
 
-        public bool IsValidTransactionForBlock(string blockHash, Transaction tx)
+        public bool IsValidTransactionForBlock(Hash blockHash, Transaction tx)
         {
             var balance = GetBalanceInBlock(tx.senderAddr, blockHash);
 
@@ -66,11 +66,11 @@ namespace minichain
             return true;
         }
 
-        public Transaction GetTransaction(string transactionHash)
+        public Transaction GetTransaction(Hash transactionHash)
         {
             return db.Read<Transaction>($"tx/{transactionHash}");
         }
-        public Block GetBlock(string blockHash)
+        public Block GetBlock(Hash blockHash)
         {
             return blockDB.Get<Block>(blockHash);
         }
@@ -82,15 +82,15 @@ namespace minichain
             return GetBlock(lookUp);
         }
 
-        public double GetBalanceInBlock(string address, string blockHash)
+        public double GetBalanceInBlock(Hash address, Hash blockHash)
         {
             return stateDB.GetState(blockHash, address).balance;
         }
-        public double GetBalance(string address)
+        public double GetBalance(Hash address)
         {
             return GetBalanceInBlock(address, currentBlock.hash);
         }
-        public object GetPublicField(string address, string fieldSignature)
+        public object GetPublicField(Hash address, Hash fieldSignature)
         {
             return GetState(Sig2Hash.Field(address, fieldSignature)).value;
         }
@@ -99,15 +99,15 @@ namespace minichain
             return (string)GetState(Sig2Hash.ANS(ANSname))?.value;
         }
 
-        internal SingleState GetStateInBlock(string key, string blockHash)
+        internal SingleState GetStateInBlock(Hash key, Hash blockHash)
         {
             return stateDB.GetState(blockHash, key);
         }
-        internal SingleState GetState(string key)
+        internal SingleState GetState(Hash key)
         {
             return GetStateInBlock(key, currentBlock.hash);
         }
-        internal string GetContract(string key)
+        internal string GetContract(Hash key)
         {
             return (string)stateDB.GetState(currentBlock.hash, key)?.value;
         }
@@ -255,7 +255,9 @@ namespace minichain
                 // TODO: 공통된 fee 차감 코드
             }
 
-            stateDB.PushState(currentBlock?.hash, newBlock.hash, changes.ToArray());
+            stateDB.PushState(
+                currentBlock == null ? Hash.ZeroAddress : currentBlock.hash,
+                newBlock.hash, changes.ToArray());
         }
 
         private void ApplyPaymentTransaction(Transaction tx, HashSet<PushStateEntry> changes)

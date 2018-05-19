@@ -43,7 +43,7 @@ namespace minichain
         /// RSA encrypted sign to validate this transaction.
         public string encryptedSign;
 
-        public string senderAddr, receiverAddr;
+        public Hash senderAddr, receiverAddr;
 
         public udouble fee;
         public udouble _out;
@@ -59,7 +59,7 @@ namespace minichain
         public string contractProgram;
 
         // TransactionType.Call
-        public string methodSignature;
+        public Hash methodSignature;
         public object[] callArgs;
 
         // TransactionType.*ANS
@@ -70,7 +70,7 @@ namespace minichain
     {
         internal static Transaction EmptyTransaction()
         {
-            return new Transaction() { hash = "0000000000000000" };
+            return new Transaction() { hash = Hash.ZeroAddress };
         }
         public static bool IsValidTransaction(Transaction tx)
         {

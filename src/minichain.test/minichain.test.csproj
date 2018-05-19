@@ -53,6 +53,7 @@
     <Compile Include="Cvt_test.cs" />
     <Compile Include="dbtest\KeyValueDB_test.cs" />
     <Compile Include="dbtest\MemDB_test.cs" />
+    <Compile Include="mcore\Hash_test.cs" />
     <Compile Include="udouble_test.cs" />
     <Compile Include="RSA_test.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
@@ -64,6 +65,10 @@
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\mcore\mcore.csproj">
+      <Project>{472ea68b-d36a-484a-806d-f11ac3d9d81f}</Project>
+      <Name>mcore</Name>
+    </ProjectReference>
     <ProjectReference Include="..\minichain\minichain.csproj">
       <Project>{0a876fa1-46a7-44f7-994c-0e445cb05e5e}</Project>
       <Name>minichain</Name>

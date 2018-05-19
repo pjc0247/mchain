@@ -1,0 +1,1 @@
+nuget pack mcore.csproj -properties Configuration=Release

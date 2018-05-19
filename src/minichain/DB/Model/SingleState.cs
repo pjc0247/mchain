@@ -29,7 +29,7 @@ namespace minichain
         /// <summary>
         /// THIS IS NOT AN ADDRESS
         /// </summary>
-        public override string hash
+        public override Hash hash
         {
             get { return Hash.Calc3(key, balance.ToString(), value?.ToString()); }
         }

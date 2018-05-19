@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 15
-VisualStudioVersion = 15.0.27004.2005
+VisualStudioVersion = 15.0.27130.2036
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "minichain", "minichain\minichain.csproj", "{0A876FA1-46A7-44F7-994C-0E445CB05E5E}"
 EndProject
@@ -14,6 +14,8 @@ EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "minivm.core", "..\minidity\src\minivm.core\minivm.core.csproj", "{927F7CBA-EEF2-4429-9C98-CCDEA6D2EC5A}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "minivm", "..\minidity\src\minivm\minivm.csproj", "{B55C2E34-A003-430F-8FDA-661752E6BF71}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "mcore", "mcore\mcore.csproj", "{472EA68B-D36A-484A-806D-F11AC3D9D81F}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -45,6 +47,10 @@ Global
 		{B55C2E34-A003-430F-8FDA-661752E6BF71}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{B55C2E34-A003-430F-8FDA-661752E6BF71}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{B55C2E34-A003-430F-8FDA-661752E6BF71}.Release|Any CPU.Build.0 = Release|Any CPU
+		{472EA68B-D36A-484A-806D-F11AC3D9D81F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{472EA68B-D36A-484A-806D-F11AC3D9D81F}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{472EA68B-D36A-484A-806D-F11AC3D9D81F}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{472EA68B-D36A-484A-806D-F11AC3D9D81F}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

@@ -11,7 +11,7 @@ namespace minichain
         public static int TrustedConfirmations = 30;
 
         public static int MaxTransactionsPerBlock = 16;
-        public static string RewardSenderAddress = "0000000000000000";
+        public static string RewardSenderAddress = Hash.ZeroAddress;
 
         public static double CalcBlockReward(int blockNo)
         {

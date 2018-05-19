@@ -12,14 +12,14 @@ namespace minichain
         public int blockNo { get; protected set; }
 
         /// Address of block miner
-        public string minerAddr { get; protected set; }
+        public Hash minerAddr { get; protected set; }
 
         /// This block hash
-        public string hash { get; protected set; }
+        public Hash hash { get; protected set; }
         /// Prev block hash
-        public string prevBlockHash { get; protected set; }
+        public Hash prevBlockHash { get; protected set; }
         /// Merkle root hash
-        public string merkleRootHash { get; protected set; }
+        public Hash merkleRootHash { get; protected set; }
 
         public string nonce { get; protected set; }
         public int difficulty { get; protected set; }
@@ -40,7 +40,7 @@ namespace minichain
                     hash = GetBlockHash(null, null, "0")
                 };
         }
-        public static string GetBlockHash(string prevBlockHash, string merkleRootHash, string nonce)
+        public static Hash GetBlockHash(string prevBlockHash, string merkleRootHash, string nonce)
         {
             return Hash.Calc(prevBlockHash + merkleRootHash + nonce);
         }
@@ -52,7 +52,7 @@ namespace minichain
         {
             var hash = GetBlockHash(block.prevBlockHash, block.merkleRootHash, nonce);
 
-            return hash.StartsWith(new string('0', block.difficulty));
+            return hash.str.StartsWith(new string('0', block.difficulty));
         }
         /// <summary>
         /// Lightweight validations with block header.
@@ -104,7 +104,7 @@ namespace minichain
         public Block()
         {
         }
-        public Block(string _minerAddr, Block _prev, Transaction[] _txs, string _nonce)
+        public Block(Hash _minerAddr, Block _prev, Transaction[] _txs, string _nonce)
         {
             if (_prev == null)
                 throw new ArgumentNullException(nameof(_prev));
