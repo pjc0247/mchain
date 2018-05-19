@@ -43,15 +43,15 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Hash.cs" />
-    <Compile Include="Hash.Calc.cs" />
-    <Compile Include="NonPublicPropertiesResolver.cs" />
+    <Compile Include="DataType\Hash.cs" />
+    <Compile Include="DataType\Hash.Calc.cs" />
+    <Compile Include="Serialize\NonPublicPropertiesResolver.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="Serializer.cs" />
-    <Compile Include="udouble.cs" />
+    <Compile Include="Serialize\Serializer.cs" />
+    <Compile Include="DataType\udouble.cs" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Hash.JsonConverter.cs" />
+    <Compile Include="DataType\Hash.JsonConverter.cs" />
     <None Include="packages.config" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
