@@ -8,6 +8,8 @@ namespace minichain
 {
     public enum StateType
     {
+        Empty,
+
         Wallet,
 
         Contract,

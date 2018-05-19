@@ -91,7 +91,7 @@ namespace minichain
 
             // Empty account
             EmptyAccount:
-            return new SingleState(StateType.Wallet)
+            return new SingleState(StateType.Empty)
             {
                 key = address,
                 balance = 0.0

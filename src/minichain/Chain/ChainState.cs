@@ -54,7 +54,7 @@ namespace minichain
 
             if (tx.type == TransactionType.Deploy)
             {
-                if (GetStateInBlock(tx.receiverAddr, blockHash) != null)
+                if (GetStateInBlock(tx.receiverAddr, blockHash).type != StateType.Empty)
                     return false;
             }
             else if (tx.type == TransactionType.RegisterANS)
@@ -237,6 +237,8 @@ namespace minichain
 
             foreach (var tx in txs)
             {
+                Console.WriteLine($"Tx {tx.type}");
+
                 tx.receiverAddr = ANSLookup.Resolve(this, tx.receiverAddr);
 
                 if (tx.type == TransactionType.Payment)
