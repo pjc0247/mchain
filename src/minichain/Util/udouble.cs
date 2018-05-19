@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace minichain
+namespace minivm.core
 {
     public struct udouble : IComparable
     {

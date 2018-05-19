@@ -41,5 +41,23 @@ namespace minichain
                     value = value
                 }));
         }
+
+        public void Transfer(string receiverAddress, double amount)
+        {
+            var contractState = state.GetState(contractAddr);
+            var receiverState = state.GetState(receiverAddress);
+
+            if (amount == 0) return;
+            if (contractState.balance < amount)
+                throw new BlockValidationException("insufficient funds");
+
+            contractState.balance -= amount;
+            changes.Add(PushStateEntry.Create(
+                PushStateFlag.None, contractState));
+
+            receiverState.balance += amount;
+            changes.Add(PushStateEntry.Create(
+                PushStateFlag.None, receiverState));
+        }
     }
 }
