@@ -318,7 +318,7 @@ namespace minichain
 
             (var abi, var insts) = BConv.FromBase64(tx.contractProgram);
             var sp = (ChainStateProvider)vm.stateProvider;
-            sp.SetContext(this, tx.receiverAddr, changes);
+            sp.SetContext(this, tx.receiverAddr, tx, changes);
             vm.Execute(abi, insts, tx.methodSignature, 1000, out _);
         }
 
@@ -330,7 +330,7 @@ namespace minichain
 
             (var abi, var insts) = BConv.FromBase64(contract);
             var sp = (ChainStateProvider)vm.stateProvider;
-            sp.SetContext(this, tx.receiverAddr, changes);
+            sp.SetContext(this, tx.receiverAddr, tx, changes);
             var ret = vm.Execute  (abi, insts, tx.methodSignature, tx.callArgs, 1000, out _);
         }
     }

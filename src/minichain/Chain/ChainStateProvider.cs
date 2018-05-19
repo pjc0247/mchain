@@ -11,19 +11,29 @@ namespace minichain
     internal class ChainStateProvider : IStateProvider
     {
         public int blockNo => state.currentBlock.blockNo;
-
+        public TransactionData tx => _tx;
+        
         private ChainState state;
         private string contractAddr;
         private HashSet<PushStateEntry> changes;
+        private TransactionData _tx;
 
         public void SetContext(
             ChainState _state,
             string _contractAddr,
+            Transaction tx,
             HashSet<PushStateEntry> _changes)
         {
             state = _state;
             contractAddr = _contractAddr;
             changes = _changes;
+
+            _tx = new TransactionData()
+            {
+                receiverAddress = tx.receiverAddr,
+                senderAddress = tx.senderAddr,
+                value = tx._out
+            };
         }
 
         public object GetState(string key)
