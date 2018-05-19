@@ -1,0 +1,20 @@
+class Mrc20 {
+  public totalSupply;
+  
+  def _ctor() {
+  }
+  
+  def transfer(address, amount) {
+  }
+  def transferFrom(from, to, amount) {
+  }
+  
+  def balanceOf(address) {
+  }
+  
+  def approve(spender, amount) {
+  }
+  def allowance(owner, spender) {
+  
+  }
+}
