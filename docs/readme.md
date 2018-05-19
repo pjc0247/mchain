@@ -3,8 +3,11 @@ minichain
 
 Subjects
 ----
-  * [Customize minichain](customize_chain.md)
-  * [Create a hardfork patch](hardfork_update.md)
+  * __BLOCKCHAIN__
+    * [Customize minichain](customize_chain.md)
+    * [Create a hardfork patch](hardfork_update.md)
+  * __CONTRACT__
+    * [Basic usage](contract/readme.md)
 
 Setup
 ----
