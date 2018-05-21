@@ -54,7 +54,18 @@ namespace minichain
 
             if (tx.type == TransactionType.Deploy)
             {
+                // Target must be an empty address
                 if (GetStateInBlock(tx.receiverAddr, blockHash).type != StateType.Empty)
+                    return false;
+            }
+            else if (tx.type == TransactionType.Call)
+            {
+                var contract = GetContract(tx.receiverAddr);
+                if (contract == null)
+                    return false;
+
+                (var abi, var insts) = BConv.FromBase64(contract);
+                if (abi.methods.Any(x => x.signature == tx.methodSignature) == false)
                     return false;
             }
             else if (tx.type == TransactionType.RegisterANS)
@@ -237,9 +248,10 @@ namespace minichain
 
             foreach (var tx in txs)
             {
-                Console.WriteLine($"Tx {tx.type}");
-
                 tx.receiverAddr = ANSLookup.Resolve(this, tx.receiverAddr);
+
+                if (IsValidTransactionForBlock(newBlock.prevBlockHash, tx) == false)
+                    throw new BlockValidationException("Invalid tx: " + tx.hash);
 
                 if (tx.type == TransactionType.Payment)
                     ApplyPaymentTransaction(tx, changes);
@@ -260,6 +272,9 @@ namespace minichain
                 newBlock.hash, changes.ToArray());
         }
 
+        // APPLIES SINGLE TRANSACTIONS
+        //   EVERY TRANSACTIONS MUST BE VALID HERE
+        //   So, do not check twice
         private void ApplyPaymentTransaction(Transaction tx, HashSet<PushStateEntry> changes)
         {
             if (tx.senderAddr != Consensus.RewardSenderAddress)
@@ -304,7 +319,6 @@ namespace minichain
                     value = tx.receiverAddr
                 }));
         }
-
         private void ApplyDeployTransaction(Block newBlock, Transaction tx, HashSet<PushStateEntry> changes)
         {
             changes.Add(PushStateEntry.Create(
@@ -321,17 +335,14 @@ namespace minichain
             sp.SetContext(this, tx.receiverAddr, tx, changes);
             vm.Execute(abi, insts, tx.methodSignature, 1000, out _);
         }
-
         private void ApplyCallTransaction(Transaction tx, HashSet<PushStateEntry> changes)
         {
             var contract = GetContract(tx.receiverAddr);
-            if (contract == null)
-                throw new BlockValidationException("Invalid contract addr");
-
             (var abi, var insts) = BConv.FromBase64(contract);
             var sp = (ChainStateProvider)vm.stateProvider;
+
             sp.SetContext(this, tx.receiverAddr, tx, changes);
-            var ret = vm.Execute  (abi, insts, tx.methodSignature, tx.callArgs, 1000, out _);
+            var ret = vm.Execute(abi, insts, tx.methodSignature, tx.callArgs, 1000, out _);
         }
     }
 }
