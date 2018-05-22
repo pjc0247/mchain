@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections.Concurrent;
 using System.Linq;
 using System.Text;
 using System.Threading;
@@ -11,8 +12,7 @@ namespace minichain
 {
     public class MemDB : IStorageBackend
     {
-        private Dictionary<string, string> mem = new Dictionary<string, string>();
-        private object memLock = new object();
+        private ConcurrentDictionary<string, string> mem = new ConcurrentDictionary<string, string>();
 
         public MemDB()
         {
@@ -21,37 +21,27 @@ namespace minichain
 
         public T Read<T>(string key)
         {
-            lock (memLock)
-            {
-                if (mem.ContainsKey(key) == false)
-                    return default(T);
+            string json;
 
-                Console.WriteLine($"[DB::READ] {key}: \r\n       {mem[key]}");
-                return Serializer.Deserialize<T>(mem[key]);
-            }
+            Console.WriteLine($"[DB::READ] {key}: \r\n       {mem[key]}");
+
+            if (mem.TryGetValue(key, out json))
+                return Serializer.Deserialize<T>(json);
+            else
+                return default(T);
         }
         public void Write(string key, object value)
         {
-            lock (memLock)
-            {
-                mem[key] = Serializer.Serialize(value);
+            var json = Serializer.Serialize(value);
+            Console.WriteLine($"[DB::WRITE] {key}: \r\n       {json}");
 
-                if (value is SingleState ss)
-                    Console.WriteLine($"[DB::WRITE] {key}: {ss.balance}");
-                else
-                    Console.WriteLine($"[DB::WRITE] {key}: \r\n       {mem[key]}");
-            }
+            mem.TryAdd(key, json);
         }
-
         public void Stash(string key)
         {
-            lock (memLock)
-            {
-                if (mem.ContainsKey(key))
-                    mem.Remove(key);
+            Console.WriteLine($"[DB::STASH] {key}");
 
-                Console.WriteLine($"[DB::STASH] {key}");
-            }
+            mem.TryRemove(key, out _);
         }
     }
 }
