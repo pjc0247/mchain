@@ -59,7 +59,7 @@ namespace minichain
         }
         private void OnUnlock(RpcUnlock pkt)
         {
-            // fixme
+            // TODO: PASSWORD HASHING?
             if (pkt.password != unlockPassword)
                 AbortSession();
             else

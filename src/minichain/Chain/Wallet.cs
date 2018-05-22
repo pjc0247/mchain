@@ -10,7 +10,7 @@ namespace minichain
 {
     public class WalletState : SingleState
     {
-        public string address => key;
+        public Hash address => key;
 
         public WalletState() : base(StateType.Wallet)
         {

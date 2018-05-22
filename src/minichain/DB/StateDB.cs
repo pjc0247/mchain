@@ -120,7 +120,7 @@ namespace minichain
                     if (header.path.ContainsKey(index))
                     {
                         changes[index] = ReadStateBlob(index, header.path[index])
-                            .ToDictionary(x => x.key, x => x);
+                            .ToDictionary(x => x.key.str, x => x);
                     }
                     else 
                         changes[index] = new Dictionary<string, SingleState>();

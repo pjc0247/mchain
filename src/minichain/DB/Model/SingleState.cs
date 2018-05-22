@@ -22,7 +22,7 @@ namespace minichain
     {
         public StateType type { get; set; }
 
-        public string key { get; set; }
+        public Hash key { get; set; }
         public double balance { get; set; }
         public object value { get; set; }
 
