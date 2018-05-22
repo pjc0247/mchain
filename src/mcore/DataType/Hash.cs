@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 
 public partial struct Hash
@@ -26,8 +27,10 @@ public partial struct Hash
             return false;
         if (ValidAddrLength == -1)
             return true;
+        if (addr.Length != ValidAddrLength)
+            return false;
 
-        return addr.Length == ValidAddrLength;
+        return Regex.IsMatch(addr, @"[a-zA-Z0-9]");
     }
 
     public Hash(string _addr)
