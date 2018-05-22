@@ -22,9 +22,11 @@ namespace minichain
         {
             node = _node;
 
+            var password = node.cfg.rpcPassword;
+
             ws = new WebSocketServer(port);
             ws.ReuseAddress = true;
-            ws.AddWebSocketService("/", () => new RpcSession(this));
+            ws.AddWebSocketService("/", () => new RpcSession(this, password));
         }
 
         public void Start()

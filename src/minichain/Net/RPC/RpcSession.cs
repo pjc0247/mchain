@@ -15,11 +15,13 @@ namespace minichain
     {
         private RpcServer server;
 
+        private string unlockPassword;
         private bool isUnlocked = false;
 
-        public RpcSession(RpcServer _server)
+        public RpcSession(RpcServer _server, string _unlockPassword)
         {
             server = _server;
+            unlockPassword = _unlockPassword;
         }
 
         protected override void OnError(ErrorEventArgs e)
@@ -58,7 +60,7 @@ namespace minichain
         private void OnUnlock(RpcUnlock pkt)
         {
             // fixme
-            if (pkt.password != "asdfasdf")
+            if (pkt.password != unlockPassword)
                 AbortSession();
             else
             {

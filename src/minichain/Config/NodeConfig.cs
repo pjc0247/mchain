@@ -17,6 +17,7 @@ namespace minichain
         // RPC
         public bool useRpcServer = true;
         public int rpcListenPort = 4044;
+        public string rpcPassword = "asdf1234";
 
         // TX_POOL
         public int maxTxpoolSize = 1024;
