@@ -246,7 +246,10 @@ namespace minichain
             var txs = newBlock.txs;
             var changes = new HashSet<PushStateEntry>();
 
-            foreach (var tx in txs)
+            if (txs.Length > 0)
+                ApplyPaymentTransaction(txs.First(), changes);
+
+            foreach (var tx in txs.Skip(1))
             {
                 tx.receiverAddr = ANSLookup.Resolve(this, tx.receiverAddr);
 

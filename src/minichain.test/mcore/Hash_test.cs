@@ -9,6 +9,13 @@ namespace minichain.test
     public class Hash_test
     {
         [TestMethod]
+        public void IsValidHash()
+        {
+            Assert.AreEqual(true, Hash.IsValidAddress(Hash.ZeroAddress));
+            Assert.AreEqual(false, Hash.IsValidAddress("ASDF"));
+        }
+
+        [TestMethod]
         public void Equality()
         {
             Assert.AreEqual(Hash.ZeroAddress, Hash.ZeroAddress);

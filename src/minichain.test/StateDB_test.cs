@@ -16,7 +16,7 @@ namespace minichain.test
             var addr_a = UniqID.Generate();
             var addr_b = UniqID.Generate();
 
-            var state = sdb.PushState(null, "1", new PushStateEntry[]
+            var state = sdb.PushState(Hash.ZeroAddress, Hash.Calc("1"), new PushStateEntry[]
             {
                 PushStateEntry.Create(PushStateFlag.None, 
                      new SingleState(StateType.Wallet)
@@ -32,10 +32,10 @@ namespace minichain.test
                      }),
             });
 
-            Assert.AreEqual(100, sdb.GetState("1", addr_a).balance);
-            Assert.AreEqual(200, sdb.GetState("1", addr_b).balance);
+            Assert.AreEqual(100, sdb.GetState(Hash.Calc("1"), addr_a).balance);
+            Assert.AreEqual(200, sdb.GetState(Hash.Calc("1"), addr_b).balance);
 
-            state = sdb.PushState(state, "2", new PushStateEntry[]
+            state = sdb.PushState(state, Hash.Calc("2"), new PushStateEntry[]
             {
                 PushStateEntry.Create(PushStateFlag.None,
                      new SingleState(StateType.Wallet)
@@ -45,8 +45,8 @@ namespace minichain.test
                      })
             });
 
-            Assert.AreEqual(200, sdb.GetState("2", addr_a).balance);
-            Assert.AreEqual(200, sdb.GetState("2", addr_b).balance);
+            Assert.AreEqual(200, sdb.GetState(Hash.Calc("2"), addr_a).balance);
+            Assert.AreEqual(200, sdb.GetState(Hash.Calc("2"), addr_b).balance);
         }
 
         [TestMethod]
@@ -56,7 +56,7 @@ namespace minichain.test
 
             var addr_a = UniqID.Generate();
 
-            var stateA = sdb.PushState(null, "1", new PushStateEntry[]
+            var stateA = sdb.PushState(Hash.ZeroAddress, Hash.Calc("1"), new PushStateEntry[]
             {
                 PushStateEntry.Create(PushStateFlag.None,
                      new SingleState(StateType.Wallet)
@@ -65,7 +65,7 @@ namespace minichain.test
                          balance = 100
                      })
             });
-            var stateB = sdb.PushState(stateA, "2", new PushStateEntry[]
+            var stateB = sdb.PushState(stateA, Hash.Calc("2"), new PushStateEntry[]
             {
                 PushStateEntry.Create(PushStateFlag.None,
                      new SingleState(StateType.Wallet)
@@ -74,7 +74,7 @@ namespace minichain.test
                          balance = 200
                      })
             });
-            var stateC = sdb.PushState(stateB, "3", new PushStateEntry[]
+            var stateC = sdb.PushState(stateB, Hash.Calc("3"), new PushStateEntry[]
             {
                 PushStateEntry.Create(PushStateFlag.None,
                      new SingleState(StateType.Wallet)
@@ -84,9 +84,9 @@ namespace minichain.test
                      })
             });
 
-            Assert.AreEqual(100, sdb.GetState("1", addr_a).balance);
-            Assert.AreEqual(200, sdb.GetState("2", addr_a).balance);
-            Assert.AreEqual(300, sdb.GetState("3", addr_a).balance);
+            Assert.AreEqual(100, sdb.GetState(Hash.Calc("1"), addr_a).balance);
+            Assert.AreEqual(200, sdb.GetState(Hash.Calc("2"), addr_a).balance);
+            Assert.AreEqual(300, sdb.GetState(Hash.Calc("3"), addr_a).balance);
         }
 
         [TestMethod]
@@ -95,22 +95,22 @@ namespace minichain.test
         {
             var sdb = new StateDB(new MemDB());
 
-            var prev = sdb.PushState(null, "1", new PushStateEntry[]
+            var prev = sdb.PushState(Hash.ZeroAddress, Hash.Calc("1"), new PushStateEntry[]
             {
                 PushStateEntry.Create(PushStateFlag.NewAddressOnly,
                     new SingleState(StateType.Wallet)
                     {
-                        key = "ASDFASDFASDF",
+                        key = Hash.Calc("RANDOM_ADDRESS"),
                         balance = 0
                     })
             });
 
-            sdb.PushState(prev, "2", new PushStateEntry[]
+            sdb.PushState(prev, Hash.Calc("2"), new PushStateEntry[]
             {
                 PushStateEntry.Create(PushStateFlag.NewAddressOnly,
                     new SingleState(StateType.Wallet)
                     {
-                        key = "ASDFASDFASDF",
+                        key = Hash.Calc("RANDOM_ADDRESS"),
                         balance = 0
                     })
             });

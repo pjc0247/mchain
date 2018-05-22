@@ -105,7 +105,7 @@ namespace minichain
         {
             DataHeader header = null;
 
-            if (prevStateRoot == null)
+            if (prevStateRoot == Hash.ZeroAddress)
                 header = DataHeader.EmptyState();
             else header = ReadHeader(prevStateRoot);
 

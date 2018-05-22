@@ -23,12 +23,16 @@ namespace minichain
         {
             string json;
 
-            Console.WriteLine($"[DB::READ] {key}: \r\n       {mem[key]}");
-
             if (mem.TryGetValue(key, out json))
+            {
+                Console.WriteLine($"[DB::READ] {key}: \r\n       {json}");
                 return Serializer.Deserialize<T>(json);
+            }
             else
+            {
+                Console.WriteLine($"[DB::READ] {key}: \r\n       null");
                 return default(T);
+            }
         }
         public void Write(string key, object value)
         {

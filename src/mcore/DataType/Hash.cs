@@ -35,6 +35,8 @@ public partial struct Hash
 
     public Hash(string _addr)
     {
+        if (string.IsNullOrEmpty(_addr))
+            _addr = Hash.ZeroAddress;
         if (IsValidAddress(_addr) == false)
             throw new ArgumentException(nameof(_addr) + " / " + _addr);
 
