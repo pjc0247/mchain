@@ -27,7 +27,7 @@ var node = new Miner();
 node.Start();
 ```
 
-P2p
+p2p
 ----
 __Connect to peer__
 ```cs
@@ -79,6 +79,7 @@ Wallet
 ----
 __Import and Export__
 ```cs
+// Exports wallet data (this also includes PRIVATE-KEY)
 var json = node.wallet.Export();
 
 node.wallet.Import(json);
@@ -93,5 +94,5 @@ var balanceAtSpecificBlock = node.wallet.GetBalanceInBlock("BLOCK_HASH");
 
 __Create a signed transaction__
 ```cs
-node.wallet.CreateSignedTransaction("RECEIVER_ADDR", VALUE_AMOUNT);
+node.wallet.CreateSignedPaymentTransaction("RECEIVER_ADDR", VALUE_AMOUNT);
 ```
