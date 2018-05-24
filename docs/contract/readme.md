@@ -15,9 +15,14 @@ class MyFirstContract {
 }
 ```
 
-Internal calls
+Predefined methods
 ----
+```
+tx.sender
+tx.value
 
+Chain.transfer
+```
 
 Deploy a contract
 ----
