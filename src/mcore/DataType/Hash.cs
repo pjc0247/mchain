@@ -51,4 +51,9 @@ public partial struct Hash
     {
         return new Hash(d);
     }
+
+    public override string ToString()
+    {
+        return addr;
+    }
 }
