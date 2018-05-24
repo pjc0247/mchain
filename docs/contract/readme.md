@@ -17,3 +17,26 @@ class MyFirstContract {
 
 Internal calls
 ----
+
+
+Deploy a contract
+----
+```cs
+var program = "BASE64_ENCODED_PROGRAM";
+var ctorSignature = "ContractName::_ctor";
+
+var tx = node.wallet.CreateDeployTransaction(program, ctorSignature);
+node.SendTransaction(tx);
+
+var contractAddress = tx.receiverAddr;
+```
+
+Execute 
+----
+```cs
+var methodSignature = "ContractName::MethodName";
+var args = new object[] { 2, 3 };
+
+var tx = node.wallet.CreateCallTransaction(contractAddress, methodSignature, args);
+node.SendTransaction(tx);
+```
