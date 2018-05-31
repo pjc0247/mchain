@@ -65,6 +65,8 @@ namespace minichain
         {
             if (Transaction.IsValidTransaction(tx) == false)
                 throw new ArgumentException(nameof(tx));
+            if (chain.IsValidTransactionForBlock(chain.currentBlock.hash, tx))
+                throw new InvalidOperationException("Tx is not valid for current state");
 
             txPool.AddTransaction(tx);
             SendPacketToAllPeers(new PktNewTransaction()
