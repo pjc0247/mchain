@@ -12,6 +12,8 @@ public partial struct Hash
     /// </summary>
     public static Hash Calc(string a)
     {
+        if (a == null) a = "";
+
         // I know it is not a good hashing algorithm.
         var sha = SHA1.Create();
         var hash = sha.ComputeHash(Encoding.UTF8.GetBytes(a));

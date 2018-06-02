@@ -9,6 +9,14 @@ namespace minichain.test
     public class Hash_test
     {
         [TestMethod]
+        public void NullCanBeHashed()
+        {
+            Hash.Calc((string)null);
+            Hash.Calc((string)null, (string)null);
+            Hash.Calc((string)null, (string)null, (string)null);
+        }
+
+        [TestMethod]
         public void IsValidHash()
         {
             Assert.AreEqual(true, Hash.IsValidAddress(Hash.ZeroAddress));
