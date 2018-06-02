@@ -31,5 +31,13 @@ namespace minichain.test
             Assert.AreEqual(Hash.Calc("1").Length, Hash.Calc("3").Length);
             Assert.AreEqual(Hash.Calc("3").Length, Hash.Calc("4").Length);
         }
+
+        [TestMethod]
+        public void HashToString()
+        {
+            var hash = Hash.Calc("a");
+
+            Assert.AreEqual(hash.ToString(), hash.str);
+        }
     }
 }

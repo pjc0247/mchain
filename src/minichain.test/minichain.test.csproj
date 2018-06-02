@@ -54,7 +54,7 @@
     <Compile Include="dbtest\KeyValueDB_test.cs" />
     <Compile Include="dbtest\MemDB_test.cs" />
     <Compile Include="mcore\Hash_test.cs" />
-    <Compile Include="udouble_test.cs" />
+    <Compile Include="mcore\udouble_test.cs" />
     <Compile Include="RSA_test.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="StateDB_test.cs" />
