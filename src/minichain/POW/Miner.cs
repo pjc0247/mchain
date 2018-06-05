@@ -62,6 +62,9 @@ namespace minichain
 
         private void MinerHQ()
         {
+            // Wait for other peers
+            Thread.Sleep(3000);
+
             while (isAlive)
             {
                 // Unable to mine a new block until syncing is done.

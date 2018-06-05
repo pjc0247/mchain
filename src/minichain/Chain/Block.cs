@@ -59,6 +59,8 @@ namespace minichain
         /// </summary>
         public static bool IsValidBlockLight(Block block, string nonce)
         {
+            if (block == null) return false;
+
             // Genesis-block is always right;
             if (block.blockNo == 0) return true;
 
