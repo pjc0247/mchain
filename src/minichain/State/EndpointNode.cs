@@ -33,6 +33,9 @@ namespace minichain
         public EndpointNode() : this (new NodeConfig())
         {
         }
+        /// <summary>
+        /// Creates a node with a given configuration.
+        /// </summary>
         public EndpointNode(NodeConfig _cfg)
         {
             cfg = _cfg;
@@ -76,6 +79,9 @@ namespace minichain
             });
         }
 
+        /// <summary>
+        /// Periodically requests other peers to current peers.
+        /// </summary>
         private void DiscoverWorker()
         {
             while (isAlive)
@@ -101,6 +107,8 @@ namespace minichain
         }
         private void OnResponsePeers(Peer sender, PktResponsePeers pkt)
         {
+            if (pkt.addrs == null) return;
+
             foreach (var addr in pkt.addrs)
                 peers.AddPeer(addr);
         }
