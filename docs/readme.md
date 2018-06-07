@@ -20,7 +20,7 @@ var node = new EndpointNode();
 ```
 
 __Miner__<br>
-You can operate mining node if you want to create a block and get mining rewards. This type of node will consume lots of CPU resources.
+You can operate mining node if you want to create a block and get mining rewards. Miner node will consume lots of CPU resources.
 ```cs
 var node = new Miner();
 
