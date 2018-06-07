@@ -6,7 +6,7 @@ Subjects
   * __BLOCKCHAIN__
     * [Customize minichain](customize_chain.md)
     * [Create a hardfork patch](hardfork_update.md)
-  * __CONTRACT__
+  * __SMART-CONTRACT__
     * [Basic usage](contract/readme.md)
 
 Setup
