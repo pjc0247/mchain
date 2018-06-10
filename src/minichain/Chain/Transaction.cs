@@ -68,10 +68,18 @@ namespace minichain
 
     public class Transaction : TransactionBody
     {
+        public static Transaction Import(string data)
+        {
+            if (string.IsNullOrEmpty(data))
+                throw new ArgumentException(nameof(data));
+
+            return Serializer.Deserialize<Transaction>(data);
+        }
         internal static Transaction EmptyTransaction()
         {
             return new Transaction() { hash = Hash.ZeroAddress };
         }
+
         public static bool IsValidTransaction(Transaction tx)
         {
             if (tx.senderAddr == Consensus.RewardSenderAddress) return false;
@@ -178,6 +186,14 @@ namespace minichain
 
             encryptedSign = RSA.SignWithPrivateKey(_privateKey, original);
             publicKey = _publicKey;
+        }
+
+        public string Export()
+        {
+            if (isSigned == false)
+                throw new InvalidOperationException("Transaction not signed");
+
+            return Serializer.Serialize(this);
         }
     }
 }
