@@ -38,11 +38,23 @@ namespace minichain
 
             AppDomain.CurrentDomain.UnhandledException += OnUnhandledException;
 
-            
-
             Console.WriteLine("==============THIS IS A YOUR WALLET DATA==============");
             Console.WriteLine(node.wallet.Export());
             Console.Title = "minichain: " + node.peers.listeningPort;
+
+            try
+            {
+                var peers = node.peers;
+                var ctxAddr = "";
+
+                while (true)
+                {
+                    var addr = Console.ReadLine();
+                }
+            }
+            catch (Exception e)
+            {
+            }
 
             return 0;
         }

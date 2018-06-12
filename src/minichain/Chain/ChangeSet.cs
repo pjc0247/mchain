@@ -44,7 +44,7 @@ namespace minichain
         public void UpdateBalance(Hash addr, double delta)
         {
             if (delta == 0) return;
-            
+
             // 1. from pending changes (current transaction)
             var wallet = pendingChanges
                 .FirstOrDefault(x => x.state.key == addr)
