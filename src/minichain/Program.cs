@@ -6,25 +6,66 @@ using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 
+using CommandLine;
+
 namespace minichain
 {
     class Program
-    { 
-        static void Main(string[] args)
+    {
+        private static EndpointNode node;
+
+        static int Main(string[] args)
         {
+            var ret = Parser.Default.ParseArguments<MinerOptions, NodeOptions>(args)
+                .MapResult(
+                    (MinerOptions opts) => SetupAsMiner(opts),
+                    (NodeOptions opts) => SetupAsFullNode(opts),
+                    errs =>
+                    {
+#if DEBUG
+                        SetupAsMiner(new MinerOptions());
+                        return 0;
+#else
+                        return -1;
+#endif
+                    });
+
+            if (ret == -1) return ret;
+
             Console.CursorVisible = false;
             Console.Title = "minichain";
             Copyright.PrintLogo();
 
             AppDomain.CurrentDomain.UnhandledException += OnUnhandledException;
 
-            var miner = new Miner();
+            
+
             Console.WriteLine("==============THIS IS A YOUR WALLET DATA==============");
-            Console.WriteLine(miner.wallet.Export());
+            Console.WriteLine(node.wallet.Export());
+            Console.Title = "minichain: " + node.peers.listeningPort;
+
+            return 0;
+        }
+        private static int SetupAsMiner(MinerOptions opts)
+        {
+            var miner = new Miner();
             miner.Start();
+            node = miner;
 
-            Console.Title = "minichain: " + miner.peers.listeningPort;
+            return 0;
+        }
+        private static int SetupAsFullNode(NodeOptions opts)
+        {
+            node = new EndpointNode();
 
+            return 0;
+        }
+        private static void OnUnhandledException(object sender, UnhandledExceptionEventArgs e)
+        {
+            Console.WriteLine(e.ExceptionObject);
+        }
+
+        /*
             try
             {
                 var peers = miner.peers;
@@ -79,10 +120,7 @@ namespace minichain
                 Console.WriteLine(e);
             }
         }
-
-        private static void OnUnhandledException(object sender, UnhandledExceptionEventArgs e)
-        {
-            Console.WriteLine(e.ExceptionObject);
-        }
+        */
+        
     }
 }
