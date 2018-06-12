@@ -244,7 +244,7 @@ namespace minichain
         private void ApplyTransactions(Block newBlock)
         {
             var txs = newBlock.txs;
-            var changes = new HashSet<PushStateEntry>();
+            var changes = new ChangeSet(this);
 
             if (txs.Length > 0)
                 ApplyPaymentTransaction(txs.First(), changes);
@@ -256,18 +256,22 @@ namespace minichain
                 if (IsValidTransactionForBlock(newBlock.prevBlockHash, tx) == false)
                     throw new BlockValidationException("Invalid tx: " + tx.hash);
 
+                var fee = -tx.fee; // Initial fee which can be changed 
+                changes.Begin();
+
                 if (tx.type == TransactionType.Payment)
                     ApplyPaymentTransaction(tx, changes);
                 else if (tx.type == TransactionType.RegisterANS)
                     ApplyRegisterANSTransaction(tx, changes);
                 else if (tx.type == TransactionType.Deploy)
-                    ApplyDeployTransaction(newBlock, tx, changes);
+                    ApplyDeployTransaction(newBlock, tx, changes, out fee);
                 else if (tx.type == TransactionType.Call)
-                    ApplyCallTransaction(tx, changes);
+                    ApplyCallTransaction(tx, changes, out fee);
                 else
                     throw new BlockValidationException("Unknown txtype: " + tx.type);
 
-                // TODO: 공통된 fee 차감 코드
+                changes.UpdateBalance(tx.senderAddr, -fee);
+                changes.Commit();
             }
 
             stateDB.PushState(
@@ -277,42 +281,17 @@ namespace minichain
 
         // APPLIES SINGLE TRANSACTIONS
         //   EVERY TRANSACTIONS MUST BE VALID HERE
-        //   So, do not check twice
-        private void ApplyPaymentTransaction(Transaction tx, HashSet<PushStateEntry> changes)
+        //
+        //   Do not check twice
+        private void ApplyPaymentTransaction(Transaction tx, ChangeSet changes)
         {
             if (tx.senderAddr != Consensus.RewardSenderAddress)
-            {
-                var senderWallet = changes
-                    .FirstOrDefault(x => x.state.key == tx.senderAddr)
-                    ?.state;
+                changes.UpdateBalance(tx.senderAddr, -tx._out);
 
-                if (senderWallet == null)
-                    senderWallet = stateDB.GetState(currentBlock.hash, tx.senderAddr);
-
-                //if (senderWallet.balance != tx._in)
-                //    throw new InvalidOperationException();
-                if (senderWallet.balance < tx._out + tx.fee)
-                    throw new BlockValidationException("balance < tx.out + tx.fee");
-
-                // Actual OUT is (_out + fee)
-                senderWallet.balance -= tx._out + tx.fee;
-                changes.Add(PushStateEntry.Create(
-                    PushStateFlag.None,senderWallet));
-            }
-
-            var receiverWallet = changes
-                .FirstOrDefault(x => x.state.key == tx.receiverAddr)
-                ?.state;
-
-            if (receiverWallet == null)
-                receiverWallet = stateDB.GetState(currentBlock.hash, tx.receiverAddr);
-
-            receiverWallet.balance += tx._out;
-            changes.Add(PushStateEntry.Create(
-                PushStateFlag.None, receiverWallet));
+            changes.UpdateBalance(tx.receiverAddr, tx._out);
         }
 
-        private void ApplyRegisterANSTransaction(Transaction tx, HashSet<PushStateEntry> changes)
+        private void ApplyRegisterANSTransaction(Transaction tx, ChangeSet changes)
         {
             changes.Add(PushStateEntry.Create(
                 PushStateFlag.NewAddressOnly,
@@ -322,7 +301,7 @@ namespace minichain
                     value = tx.receiverAddr
                 }));
         }
-        private void ApplyDeployTransaction(Block newBlock, Transaction tx, HashSet<PushStateEntry> changes)
+        private void ApplyDeployTransaction(Block newBlock, Transaction tx, ChangeSet changes, out double fee)
         {
             changes.Add(PushStateEntry.Create(
                 PushStateFlag.NewAddressOnly,
@@ -335,17 +314,41 @@ namespace minichain
 
             (var abi, var insts) = BConv.FromBase64(tx.contractProgram);
             var sp = (ChainStateProvider)vm.stateProvider;
+            var totalGasUsed = 0;
+
             sp.SetContext(this, tx.receiverAddr, tx, changes);
-            vm.Execute(abi, insts, tx.methodSignature, 1000, out _);
+            try
+            {
+                vm.Execute(abi, insts,
+                    tx.methodSignature,
+                    1000, out totalGasUsed);
+            }
+            catch (VMRuntimeException e)
+            {
+            }
+
+            fee = totalGasUsed;
         }
-        private void ApplyCallTransaction(Transaction tx, HashSet<PushStateEntry> changes)
+        private void ApplyCallTransaction(Transaction tx, ChangeSet changes, out double fee)
         {
             var contract = GetContract(tx.receiverAddr);
             (var abi, var insts) = BConv.FromBase64(contract);
             var sp = (ChainStateProvider)vm.stateProvider;
+            var totalGasUsed = 0;
 
             sp.SetContext(this, tx.receiverAddr, tx, changes);
-            var ret = vm.Execute(abi, insts, tx.methodSignature, tx.callArgs, 1000, out _);
+            try
+            {
+                var ret = vm.Execute(abi, insts,
+                    tx.methodSignature, tx.callArgs,
+                    1000, out totalGasUsed);
+            }
+            catch (VMRuntimeException e)
+            {
+            }
+
+            // tODO: gas?? fee??
+            fee = totalGasUsed;
         }
     }
 }

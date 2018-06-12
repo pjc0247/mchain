@@ -15,14 +15,14 @@ namespace minichain
         
         private ChainState state;
         private string contractAddr;
-        private HashSet<PushStateEntry> changes;
+        private ChangeSet changes;
         private TransactionData _tx;
 
         public void SetContext(
             ChainState _state,
             string _contractAddr,
             Transaction tx,
-            HashSet<PushStateEntry> _changes)
+            ChangeSet _changes)
         {
             state = _state;
             contractAddr = _contractAddr;
@@ -56,13 +56,12 @@ namespace minichain
         {
             // TODO: BUG
             // state에서 가져오면 잔고 마이너스 가능
-
             var contractState = state.GetState(contractAddr);
             var receiverState = state.GetState(receiverAddress);
 
             if (amount == 0) return;
             if (contractState.balance < amount)
-                throw new BlockValidationException("insufficient funds");
+                throw new VMRuntimeException("insufficient funds");
 
             contractState.balance -= amount;
             changes.Add(PushStateEntry.Create(
