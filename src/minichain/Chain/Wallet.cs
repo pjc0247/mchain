@@ -16,6 +16,10 @@ namespace minichain
         {
         }
     }
+
+    /// <summary>
+    /// A wallet structure for Importing/Exporting.
+    /// </summary>
     public class WalletParameter
     {
         public string address;
@@ -43,6 +47,9 @@ namespace minichain
         /// </summary>
         public void Import(string json)
         {
+            if (string.IsNullOrEmpty(json))
+                throw new ArgumentException(nameof(json));
+
             var p = JsonConvert.DeserializeObject<WalletParameter>(json);
 
             if (IsValidateKeyPair(p.privateKey, p.publicKey))
@@ -76,7 +83,7 @@ namespace minichain
             return JsonConvert.SerializeObject(p, Formatting.Indented);
         }
 
-        public double GetBalanceInBlock(string blockHash)
+        public double GetBalanceInBlock(Hash blockHash)
         {
             return chain.GetBalanceInBlock(address, blockHash);
         }
@@ -88,7 +95,7 @@ namespace minichain
         /// <summary>
         /// Creates a payment transaction signed by current wallet
         /// </summary>
-        public Transaction CreatePaymentTransaction(string receiverAddr, double amount, double fee = 0)
+        public Transaction CreatePaymentTransaction(Hash receiverAddr, double amount, double fee = 0)
         {
             var tx = new Transaction()
             {
@@ -108,7 +115,7 @@ namespace minichain
         /// <summary>
         /// Creates a deploy transaction signed by current wallet
         /// </summary>
-        public Transaction CreateDeployTransaction(string contractProgram, string ctorSignature, double fee = 0)
+        public Transaction CreateDeployTransaction(Hash contractProgram, string ctorSignature, double fee = 0)
         {
             var contractAddr = Hash.Calc2(
                 UniqID.Generate(),
@@ -133,7 +140,7 @@ namespace minichain
         /// <summary>
         /// Creates a call transaction signed by current wallet
         /// </summary>
-        public Transaction CreateCallTransaction(string contractAddr, string methodSignature, object[] args, double fee = 0)
+        public Transaction CreateCallTransaction(Hash contractAddr, string methodSignature, object[] args, double fee = 0)
         {
             var tx = new Transaction()
             {
@@ -151,7 +158,7 @@ namespace minichain
             return tx;
         }
 
-        public Transaction CreateRegisterANSTransaction(string targetAddress, string name, double fee = 0)
+        public Transaction CreateRegisterANSTransaction(Hash targetAddress, string name, double fee = 0)
         {
             var tx = new Transaction()
             {
@@ -172,6 +179,9 @@ namespace minichain
         /// </summary>
         public void Sign(Transaction tx)
         {
+            if (tx == null)
+                throw new ArgumentNullException(nameof(tx));
+
             tx.Sign(privateKey, publicKey);
         }
     }

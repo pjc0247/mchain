@@ -175,7 +175,7 @@ namespace minichain
             return false;
         }
         /// <summary>
-        /// Force reverts the current chain.
+        /// Force reverts the current chain to specific block.
         /// </summary>
         internal void RevertTo(Block block)
         {
