@@ -2,8 +2,11 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Net;
 using System.Threading;
 using System.Threading.Tasks;
+
+using Discovery;
 
 namespace minichain
 {
@@ -23,6 +26,7 @@ namespace minichain
         protected TransactionPool txPool { get; private set; }
 
         private RpcServer rpcServer;
+        private Discoverer discoverer;
         private Thread discoverThread;
 
         private int syncTargetBlockNo = 0;
@@ -54,6 +58,9 @@ namespace minichain
             Subscribe<PktRequestBlock>(OnRequestBlock);
             Subscribe<PktResponseBlock>(OnResponseBlock);
 
+            discoverer = new Discoverer("minichain", peers.listeningPort.ToString());
+            discoverer.onFoundPeer += OnFoundLocalPeer;
+            discoverer.BeginDiscovery(-1);
             discoverThread = new Thread(DiscoverWorker);
             discoverThread.Start();
         }
@@ -77,6 +84,14 @@ namespace minichain
                 sentBlockNo = chain.currentBlock.blockNo,
                 tx = tx
             });
+        }
+
+        private void OnFoundLocalPeer(Int64 id, string payload, IPEndPoint ep)
+        {
+            if (payload == peers.listeningPort.ToString())
+                return;
+
+            peers.AddPeer(ep.Address.ToString().Split(':')[0] + ":" + payload);
         }
 
         /// <summary>
