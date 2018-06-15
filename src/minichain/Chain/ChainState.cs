@@ -175,7 +175,7 @@ namespace minichain
             return false;
         }
         /// <summary>
-        /// Force reverts the current chain.
+        /// Force reverts the current chain to specific block.
         /// </summary>
         internal void RevertTo(Block block)
         {
@@ -247,7 +247,11 @@ namespace minichain
             var changes = new ChangeSet(this);
 
             if (txs.Length > 0)
+            {
+                changes.Begin();
                 ApplyPaymentTransaction(txs.First(), changes);
+                changes.Commit();
+            }
 
             foreach (var tx in txs.Skip(1))
             {

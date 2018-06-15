@@ -6,6 +6,9 @@ using System.Threading.Tasks;
 
 namespace minichain
 {
+    /// <summary>
+    /// Address Name Service
+    /// </summary>
     internal class ANSLookup
     {
         public static string Resolve(ChainState chain, string address)
