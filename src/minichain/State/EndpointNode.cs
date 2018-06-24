@@ -91,7 +91,7 @@ namespace minichain
             if (payload == peers.listeningPort.ToString())
                 return;
 
-            peers.AddPeer(ep.Address.ToString().Split(':')[0] + ":" + payload);
+            peers.ConnectPeer(ep.Address.ToString().Split(':')[0] + ":" + payload);
         }
 
         /// <summary>
@@ -125,7 +125,7 @@ namespace minichain
             if (pkt.addrs == null) return;
 
             foreach (var addr in pkt.addrs)
-                peers.AddPeer(addr);
+                peers.ConnectPeer(addr);
         }
 
         private void OnRequestBlock(Peer sender, PktRequestBlock pkt)
@@ -180,7 +180,7 @@ namespace minichain
             if (state != NodeState.OK) return;
 
             // Peer sent invalid block.
-            if (Block.IsValidBlockLight(pkt.block, pkt.block.nonce) == false)  { Console.WriteLine("Invalid block"); return; }
+            if (Block.IsValidBlockLight(pkt.block, pkt.block.nonce) == false) return;
             // My block is longer than received
             if (chain.currentBlock.blockNo >= pkt.block.blockNo) return;
 

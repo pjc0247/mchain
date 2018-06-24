@@ -81,7 +81,7 @@ namespace bad_node_demo
                 {
                     var addr = Console.ReadLine();
 
-                    peers.AddPeer(addr);
+                    peers.ConnectPeer(addr);
                 }
             }
             catch (Exception e)

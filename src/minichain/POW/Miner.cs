@@ -103,13 +103,11 @@ namespace minichain
 
                     PublishBlock(chain.currentBlock);
 
-                    /*
                     Console.WriteLine(
                         $"   * FindBlock#{chain.currentBlock.blockNo}, elapsed {elapsed} sec(s)\r\n" +
                         $"        nonce: {solution} \r\n" +
                         $"        prevBlock: {chain.currentBlock.prevBlockHash} \r\n" + 
                         $"        txs: {chain.currentBlock.txs.Length}");
-                    */
                 }
             }
         }
@@ -125,11 +123,9 @@ namespace minichain
 
         private void PrepareWorkers(Block vblock, int nThread)
         {
-            /*
             Console.WriteLine(
                 "------------------------------------------------------------\r\n" +
                 "Preparing job, block#" + vblock.blockNo + " with " + nThread + " thread(s).");
-            */
 
             Interlocked.Exchange(ref hashCounter, 0);
             for (int i = 0; i < nThread; i++)
