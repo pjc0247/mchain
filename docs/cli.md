@@ -1,4 +1,4 @@
-mchain cli interface
+mchain command line interface
 ====
 
 ```
