@@ -24,6 +24,7 @@ namespace minichain
         public PeerConnectedDelegate onPeerConnected;
         public PeerLostDelegate onPeerLost;
 
+        private string[] localAddress;
         private string externalAddress;
 
         private NodeBase nodeBase;
@@ -38,12 +39,18 @@ namespace minichain
             ws.AddWebSocketService("/", () => new Peer(this));
             ws.Start();
 
+            localAddress = ExternalAddress.GetMyLocalIps();
             externalAddress = ExternalAddress.GetMyExternalIp();
 
             Console.WriteLine("RUNNING on port " + listeningPort);
 
             foreach (var addr in HardCodedSeeds.Addrs)
                 AddPeer(addr);
+
+            onPeerConnected += (Peer peer) =>
+            {
+                Console.WriteLine("New peer: " + peer.address);
+            };
         }
 
         public void AddPeer(string addr)
@@ -56,9 +63,12 @@ namespace minichain
                 addr = "ws://" + addr;
 
             var uri = new Uri(addr);
-            if ((uri.Host == "127.0.0.1" || uri.Host == "localhost" || uri.Host == externalAddress) &&
+            if ((uri.Host == "127.0.0.1" || uri.Host == "localhost" ||
+                localAddress.Contains(uri.Host) || uri.Host == externalAddress) &&
                 uri.Port == listeningPort)
+            {
                 return;
+            }
 
             var ws = new WebSocket(addr);
             var peer = new Peer(this, ws);
