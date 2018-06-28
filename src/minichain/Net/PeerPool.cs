@@ -45,15 +45,15 @@ namespace minichain
             Console.WriteLine("RUNNING on port " + listeningPort);
 
             foreach (var addr in HardCodedSeeds.Addrs)
-                AddPeer(addr);
+                ConnectPeer(addr);
 
-            onPeerConnected += (Peer peer) =>
+            onPeerConnected += p =>
             {
-                Console.WriteLine("New peer: " + peer.address);
+                Console.WriteLine("[PEER] New peer " + p.address);
             };
         }
 
-        public void AddPeer(string addr)
+        public void ConnectPeer(string addr)
         {
             if (peers.Count >= MaxPeers) return;
             if (peers.Any(x => x.Key.address == addr)) return;
@@ -73,8 +73,6 @@ namespace minichain
             var ws = new WebSocket(addr);
             var peer = new Peer(this, ws);
             ws.Connect();
-
-            onPeerConnected?.Invoke(peer);
         }
         public void AddPeer(Peer peer)
         {
@@ -100,6 +98,7 @@ namespace minichain
                 }
                 catch(Exception e)
                 {
+                    Console.WriteLine(e);
                 }
             }
         }

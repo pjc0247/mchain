@@ -47,5 +47,16 @@ namespace minichain.test
 
             Assert.AreEqual(hash.ToString(), hash.str);
         }
+
+        [TestMethod]
+        public void Serialize()
+        {
+            var hash = Hash.Calc("a");
+
+            var json = Serializer.Serialize(hash);
+            var back = Serializer.Deserialize<Hash>(json);
+
+            Assert.AreEqual(hash.ToString(), back.ToString());
+        }
     }
 }

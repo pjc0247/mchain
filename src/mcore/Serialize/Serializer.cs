@@ -21,18 +21,39 @@ public static class Serializer
 
     public static string Serialize(this object o, bool indented = false)
     {
-        return JsonConvert.SerializeObject(o,
-            indented ? Formatting.Indented : Formatting.None,
-            converters);
+        var setting = new JsonSerializerSettings()
+        {
+            TypeNameHandling = TypeNameHandling.All,
+            TypeNameAssemblyFormatHandling = TypeNameAssemblyFormatHandling.Simple,
+            ContractResolver = new NonPublicPropertiesResolver(),
+            Converters = converters,
+            Formatting = indented ? Formatting.Indented : Formatting.None
+        };
+
+        return JsonConvert.SerializeObject(o, setting);
     }
     public static T Deserialize<T>(this string json)
     {
         var setting = new JsonSerializerSettings()
         {
+            TypeNameHandling = TypeNameHandling.All,
+            TypeNameAssemblyFormatHandling = TypeNameAssemblyFormatHandling.Simple,
             ContractResolver = new NonPublicPropertiesResolver(),
             Converters = converters
         };
 
         return JsonConvert.DeserializeObject<T>(json, setting);
+    }
+    public static object Deserialize(this string json)
+    {
+        var setting = new JsonSerializerSettings()
+        {
+            TypeNameHandling = TypeNameHandling.All,
+            TypeNameAssemblyFormatHandling = TypeNameAssemblyFormatHandling.Simple,
+            ContractResolver = new NonPublicPropertiesResolver(),
+            Converters = converters
+        };
+
+        return JsonConvert.DeserializeObject(json, setting);
     }
 }

@@ -27,10 +27,11 @@ namespace minichain
         {
             try
             {
-                return (PacketBase)JsonConvert.DeserializeObject(json, SerializeSetting);
+                return (PacketBase)Serializer.Deserialize(json);
             }
             catch(Exception e)
             {
+                Console.WriteLine(e);
                 return null;
             }
         }
@@ -52,7 +53,7 @@ namespace minichain
         /// <returns></returns>
         public string ToJson()
         {
-            return JsonConvert.SerializeObject(this, SerializeSetting);
+            return Serializer.Serialize(this);
         }
     }
 

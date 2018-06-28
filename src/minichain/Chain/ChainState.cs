@@ -164,6 +164,8 @@ namespace minichain
                     
                     onBlockConfirmed?.Invoke(block);
 
+                    Console.WriteLine("   * Block accepted: " + currentBlock.blockNo);
+
                     return true;
                 }
             }

@@ -11,7 +11,7 @@ public partial struct Hash
 
     private static readonly int ValidAddrLength = -1;
 
-    public int Length => addr.Length;
+    public int Length => addr != null ? addr.Length : 0;
     public string str => addr;
 
     private string addr;
