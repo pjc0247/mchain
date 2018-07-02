@@ -1,20 +1,29 @@
 class Mrc20 {
   public totalSupply;
   
-  def _ctor() {
+  private balances;
+  
+  def _ctor(_totalSupply) {
+    totalSupply = _totalSupply;
+    balances[tx.sender] = totalSupply;
   }
   
   def transfer(address, amount) {
+    require(amount > 0);
+    require(balances[address] > amount);
+    
+    balances[address] = balances[address] + amount;
+    balances[tx.sender] = balances[tx.sender] - amount;
   }
   def transferFrom(from, to, amount) {
   }
   
   def balanceOf(address) {
+    return balances[address];
   }
   
   def approve(spender, amount) {
   }
   def allowance(owner, spender) {
-  
   }
 }
