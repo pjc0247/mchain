@@ -314,7 +314,7 @@ namespace minichain
                 new SingleState(StateType.Contract)
                 {
                     key = tx.receiverAddr,
-                    balance = 0.0,
+                    balance = tx._out,
                     value = tx.contractProgram
                 }));
 
@@ -325,9 +325,8 @@ namespace minichain
             sp.SetContext(this, tx.receiverAddr, tx, changes);
             try
             {
-                vm.Execute(abi, insts,
-                    tx.methodSignature,
-                    1000, out totalGasUsed);
+                var result = vm.Execute(abi, insts,
+                    tx.methodSignature, 1000);
             }
             catch (VMRuntimeException e)
             {
@@ -345,9 +344,10 @@ namespace minichain
             sp.SetContext(this, tx.receiverAddr, tx, changes);
             try
             {
-                var ret = vm.Execute(abi, insts,
-                    tx.methodSignature, tx.callArgs,
-                    1000, out totalGasUsed);
+                var result = vm.Execute(abi, insts,
+                    tx.methodSignature, tx.callArgs, 1000);
+
+                var events = result.events;
             }
             catch (VMRuntimeException e)
             {

@@ -6,6 +6,9 @@ using System.Threading.Tasks;
 
 namespace minichain
 {
+    /// <summary>
+    /// Signature to Hash utilites
+    /// </summary>
     internal class Sig2Hash
     {
         public static Hash ANS(Hash name)
