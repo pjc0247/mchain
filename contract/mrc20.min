@@ -1,19 +1,22 @@
 class Mrc20 {
   public totalSupply;
   
-  private balances;
+  public balances;
+  public allowed;
   
   def _ctor(_totalSupply) {
     totalSupply = _totalSupply;
-    balances[tx.sender] = totalSupply;
+    balances[tx.sender()] = totalSupply;
   }
   
   def transfer(address, amount) {
     require(amount > 0);
-    require(balances[address] > amount);
+    require(balances[tx.sender()] > amount);
     
     balances[address] = balances[address] + amount;
-    balances[tx.sender] = balances[tx.sender] - amount;
+    balances[tx.sender()] = balances[tx.sender()] - amount;
+
+    $transfer(tx.sender(), address, amount);
   }
   def transferFrom(from, to, amount) {
   }
@@ -23,6 +26,8 @@ class Mrc20 {
   }
   
   def approve(spender, amount) {
+    allowed[tx.sender()][spender] = amount;
+    $approval(tx.sender(), spender, amount);
   }
   def allowance(owner, spender) {
   }
