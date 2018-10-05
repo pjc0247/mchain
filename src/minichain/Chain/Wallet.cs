@@ -52,7 +52,7 @@ namespace minichain
 
             var p = JsonConvert.DeserializeObject<WalletParameter>(json);
 
-            if (IsValidateKeyPair(p.privateKey, p.publicKey))
+            if (IsValidKeyPair(p.privateKey, p.publicKey))
             {
                 key = p.address;
                 privateKey = p.privateKey;
@@ -62,7 +62,12 @@ namespace minichain
                 throw new ArgumentException("Invalid key pair");
         }
 
-        private bool IsValidateKeyPair(string privateKey, string publicKey)
+
+        /// <summary>
+        /// Validates the input key pair
+        /// </summary>
+        /// <returns>returns true if valid</returns>
+        private bool IsValidKeyPair(string privateKey, string publicKey)
         {
             var sign = RSA.SignWithPrivateKey(privateKey, "teststring");
             return RSA.VerifyWithPrivateKey(publicKey, "teststring", sign);
