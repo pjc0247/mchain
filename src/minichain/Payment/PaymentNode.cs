@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 namespace minichain
 {
     /// <summary>
-    /// Basic implementation for payment validation node.
+    /// Basic implementation of payment validation node.
     /// </summary>
     public class PaymentNode : EndpointNode
     {
