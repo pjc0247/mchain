@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 namespace minichain
 {
     /// <summary>
-    /// Management pending transactions
+    /// Manages pending transactions
     /// </summary>
     public class TransactionPool
     {
