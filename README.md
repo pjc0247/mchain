@@ -13,6 +13,8 @@
 A fork of [minichain](https://github.com/pjc0247/minichain/tree/minimal-impl) which implements more advanced features such as VM and SmartContract stuffs.<br>
 (minichain project pursues the minimal codes, That's why I made another project.)
 
+<img src="https://github.com/pjc0247/minichain/raw/master/prev.gif" />
+
 __[Documentation](docs/)__<br>
 
 You can learn
